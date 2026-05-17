@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import FileUpload from '@/components/FileUpload';
 import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
@@ -76,13 +77,12 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-forest-700 mb-2">Avatar URL</label>
-            <input
-              type="url"
-              value={form.avatar}
-              onChange={(e) => setForm({ ...form, avatar: e.target.value })}
-              placeholder="https://..."
-              className="w-full px-4 py-3 bg-cream-50 border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+            <label className="block text-sm font-medium text-forest-700 mb-2">Avatar</label>
+            <FileUpload
+              accept="image"
+              label="Upload Profile Picture"
+              currentUrl={form.avatar}
+              onUpload={(url) => setForm({ ...form, avatar: url })}
             />
           </div>
 

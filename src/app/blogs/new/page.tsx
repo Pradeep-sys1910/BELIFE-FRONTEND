@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import FileUpload from '@/components/FileUpload';
 import toast from 'react-hot-toast';
 
 interface Category { id: string; name: string; slug: string; }
@@ -87,13 +88,12 @@ export default function NewBlogPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-forest-700 mb-2">Cover Image URL *</label>
-            <input
-              type="url" required
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              placeholder="https://images.unsplash.com/..."
-              className="w-full px-4 py-3 bg-white border border-cream-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+            <label className="block text-sm font-medium text-forest-700 mb-2">Cover Image *</label>
+            <FileUpload
+              accept="image"
+              label="Upload Cover Image"
+              currentUrl={form.image}
+              onUpload={(url) => setForm({ ...form, image: url })}
             />
           </div>
 
