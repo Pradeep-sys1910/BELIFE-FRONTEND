@@ -1,3 +1,5 @@
+'use client';
+
 import { Leaf, TreePine, Recycle, Sun, Droplet, Bike } from 'lucide-react';
 import Link from 'next/link';
 
