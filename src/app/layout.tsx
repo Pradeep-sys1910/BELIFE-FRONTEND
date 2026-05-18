@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import ToasterProvider from '@/components/ToasterProvider';
-import TopNav from '@/components/layout/TopNav';
+import SideNav from '@/components/layout/SideNav';
 import BottomNav from '@/components/layout/BottomNav';
 import './globals.css';
 
@@ -17,9 +17,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="bg-cream-50 text-gray-900 font-sans antialiased">
-        <TopNav />
-        {children}
+      <body className="bg-white text-gray-900 font-sans antialiased">
+        <div className="flex min-h-screen">
+          <SideNav />
+          <main className="flex-1 md:ml-[244px] pb-16 md:pb-0 min-w-0">
+            {children}
+          </main>
+        </div>
         <BottomNav />
         <ToasterProvider />
       </body>
