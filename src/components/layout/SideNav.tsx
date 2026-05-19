@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, Tag, PenSquare, User, Leaf, LogOut, MessageCircle } from 'lucide-react';
+import { Home, Compass, Tag, PenSquare, User, Leaf, LogOut, MessageCircle, Settings } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/messages', icon: MessageCircle, label: 'Messages', auth: true },
   { href: '/blogs/new', icon: PenSquare, label: 'Write', auth: true },
   { href: '/dashboard', icon: User, label: 'Profile', auth: true },
+  { href: '/settings', icon: Settings, label: 'Settings', auth: true },
 ];
 
 export default function SideNav() {

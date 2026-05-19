@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal, TrendingUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 interface Blog {
   id: string;
@@ -26,14 +28,6 @@ interface Category {
   icon: string;
 }
 
-const TRENDING_TOPICS = [
-  { name: 'Zero Waste', slug: 'zero-waste' },
-  { name: 'Sustainable Food', slug: 'sustainable-food' },
-  { name: 'Climate Action', slug: 'climate-action' },
-  { name: 'Green Home', slug: 'green-home' },
-  { name: 'Eco Travel', slug: 'eco-travel' },
-];
-
 function Avatar({ name, avatar, size = 8 }: { name: string; avatar?: string; size?: number }) {
   if (avatar) {
     return <img src={avatar} alt={name} className={`w-${size} h-${size} rounded-full object-cover`} />;
@@ -46,29 +40,38 @@ function Avatar({ name, avatar, size = 8 }: { name: string; avatar?: string; siz
 }
 
 function PostCard({ blog }: { blog: Blog }) {
+  const { user } = useAuthStore();
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [likes, setLikes] = useState(blog._count.likes);
 
   const handleLike = () => {
+    if (!user) { router.push('/login'); return; }
     setLiked(l => !l);
     setLikes(n => liked ? n - 1 : n + 1);
   };
 
+  const handleSave = () => {
+    if (!user) { router.push('/login'); return; }
+    setSaved(s => !s);
+  };
+
   return (
-    <article className="border-b border-gray-200 pb-6 mb-6">
+    <article className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-5 shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Avatar name={blog.author.name} avatar={blog.author.avatar} size={8} />
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
+        <Link href={`/profile/${blog.author.name}`} className="flex items-center gap-2.5 group">
+          <Avatar name={blog.author.name} avatar={blog.author.avatar} size={9} />
           <div>
-            <p className="text-sm font-semibold text-gray-900 leading-tight">{blog.author.name}</p>
-            <p className="text-xs text-gray-500">
-              {blog.category.name} · {formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}
+            <p className="text-sm font-semibold text-gray-900 group-hover:text-forest-600 transition leading-tight">{blog.author.name}</p>
+            <p className="text-xs text-gray-400">
+              <Link href={`/categories/${blog.category.slug}`} className="hover:text-forest-500 transition">{blog.category.name}</Link>
+              {' · '}{formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}
             </p>
           </div>
-        </div>
-        <button className="text-gray-400 hover:text-gray-600 transition p-1">
+        </Link>
+        <button className="text-gray-300 hover:text-gray-500 transition p-1 rounded-full hover:bg-gray-50">
           <MoreHorizontal className="w-5 h-5" />
         </button>
       </div>
@@ -76,55 +79,90 @@ function PostCard({ blog }: { blog: Blog }) {
       {/* Image */}
       {blog.image && (
         <Link href={`/blogs/${blog.slug}`}>
-          <div className="w-full rounded-sm overflow-hidden bg-gray-100 aspect-[4/3] mb-3">
-            <img src={blog.image} alt={blog.title} className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500" />
+          <div className="w-full overflow-hidden bg-gray-100 aspect-[16/9]">
+            <img
+              src={blog.image}
+              alt={blog.title}
+              className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-500"
+            />
           </div>
         </Link>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-4">
-          <button onClick={handleLike} className="text-gray-700 hover:text-red-500 transition active:scale-125 duration-150">
-            <Heart className={`w-6 h-6 ${liked ? 'fill-red-500 text-red-500' : ''}`} strokeWidth={liked ? 0 : 1.5} />
+      {/* Title + excerpt */}
+      <div className="px-4 pt-3 pb-2">
+        <Link href={`/blogs/${blog.slug}`}>
+          <h2 className="text-base font-semibold text-gray-900 leading-snug hover:text-forest-700 transition line-clamp-2 mb-1">
+            {blog.title}
+          </h2>
+          {blog.excerpt && (
+            <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{blog.excerpt}</p>
+          )}
+        </Link>
+      </div>
+
+      {/* Actions row */}
+      <div className="flex items-center justify-between px-4 pb-4 pt-1">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleLike}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-red-50 transition group"
+          >
+            <Heart
+              className={`w-5 h-5 transition group-hover:text-red-500 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+              strokeWidth={liked ? 0 : 1.8}
+            />
+            <span className={`text-xs font-medium ${liked ? 'text-red-500' : 'text-gray-400'}`}>{likes > 0 ? likes : ''}</span>
           </button>
-          <Link href={`/blogs/${blog.slug}#comments`} className="text-gray-700 hover:text-forest-600 transition">
-            <MessageCircle className="w-6 h-6" strokeWidth={1.5} />
+          <Link
+            href={`/blogs/${blog.slug}#comments`}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-forest-50 transition group"
+          >
+            <MessageCircle className="w-5 h-5 text-gray-400 group-hover:text-forest-600 transition" strokeWidth={1.8} />
+            <span className="text-xs font-medium text-gray-400 group-hover:text-forest-600">
+              {blog._count.comments > 0 ? blog._count.comments : ''}
+            </span>
           </Link>
-          <button className="text-gray-700 hover:text-forest-600 transition">
-            <Send className="w-6 h-6" strokeWidth={1.5} />
+          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-forest-50 transition group">
+            <Send className="w-5 h-5 text-gray-400 group-hover:text-forest-600 transition" strokeWidth={1.8} />
           </button>
         </div>
-        <button onClick={() => setSaved(s => !s)} className="text-gray-700 hover:text-forest-600 transition">
-          <Bookmark className={`w-6 h-6 ${saved ? 'fill-forest-600 text-forest-600' : ''}`} strokeWidth={saved ? 0 : 1.5} />
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-300">{blog.readTime} min read</span>
+          <button onClick={handleSave} className="flex items-center px-2.5 py-1.5 rounded-full hover:bg-forest-50 transition group">
+            <Bookmark
+              className={`w-5 h-5 transition group-hover:text-forest-600 ${saved ? 'fill-forest-600 text-forest-600' : 'text-gray-400'}`}
+              strokeWidth={saved ? 0 : 1.8}
+            />
+          </button>
+        </div>
       </div>
-
-      {/* Likes */}
-      <p className="text-sm font-semibold text-gray-900 mb-1">{likes.toLocaleString()} likes</p>
-
-      {/* Caption */}
-      <div className="text-sm text-gray-900">
-        <span className="font-semibold mr-1">{blog.author.name}</span>
-        <Link href={`/blogs/${blog.slug}`} className="text-gray-700 hover:text-forest-600 transition line-clamp-2">
-          {blog.title}
-        </Link>
-      </div>
-
-      {/* Comments preview */}
-      {blog._count.comments > 0 && (
-        <Link href={`/blogs/${blog.slug}#comments`} className="text-sm text-gray-400 mt-1 block hover:text-gray-600 transition">
-          View all {blog._count.comments} comments
-        </Link>
-      )}
-
-      {/* Read time */}
-      <p className="text-xs text-gray-400 mt-1">{blog.readTime} min read</p>
     </article>
   );
 }
 
+function SkeletonCard() {
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-5 animate-pulse">
+      <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
+        <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0" />
+        <div className="flex-1">
+          <div className="h-3 bg-gray-200 rounded w-28 mb-1.5" />
+          <div className="h-2 bg-gray-200 rounded w-20" />
+        </div>
+      </div>
+      <div className="w-full aspect-[16/9] bg-gray-200" />
+      <div className="px-4 pt-3 pb-4">
+        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+        <div className="h-3 bg-gray-200 rounded w-full mb-1" />
+        <div className="h-3 bg-gray-200 rounded w-2/3" />
+      </div>
+    </div>
+  );
+}
+
 export default function HomeContent() {
+  const { user } = useAuthStore();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,105 +173,66 @@ export default function HomeContent() {
       api.get('/categories').catch(() => ({ data: [] })),
     ]).then(([blogsRes, catsRes]) => {
       setBlogs(blogsRes.data.blogs || []);
-      setCategories(catsRes.data.slice(0, 10));
+      setCategories(catsRes.data.slice(0, 12));
     }).finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="flex justify-center min-h-screen bg-white">
-      {/* Feed column */}
-      <div className="w-full max-w-[630px] px-4 pt-6">
+    <div className="max-w-[630px] mx-auto px-4 pt-6 pb-12">
 
-        {/* Stories / Category scroll */}
-        {categories.length > 0 && (
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 mb-4 border-b border-gray-200">
+      {/* Stories / Category scroll */}
+      {categories.length > 0 && (
+        <div className="relative mb-6">
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-3">
             {categories.map((cat) => (
               <Link key={cat.slug} href={`/categories/${cat.slug}`}
                 className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group">
-                <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-forest-400 to-forest-600">
-                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-2xl border-2 border-white">
+                <div className="w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-forest-400 to-forest-600 group-hover:from-forest-500 group-hover:to-forest-700 transition-all duration-200">
+                  <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-2xl">
                     {cat.icon}
                   </div>
                 </div>
-                <span className="text-xs text-gray-700 font-medium truncate w-16 text-center group-hover:text-forest-600 transition">
+                <span className="text-xs text-gray-600 font-medium truncate w-16 text-center group-hover:text-forest-600 transition">
                   {cat.name.split(' ')[0]}
                 </span>
               </Link>
             ))}
           </div>
-        )}
+          {/* Right fade to indicate more items */}
+          <div className="absolute top-0 right-0 h-[calc(100%-12px)] w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        </div>
+      )}
 
-        {/* Feed */}
-        {loading ? (
-          <div className="flex flex-col gap-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="animate-pulse border-b border-gray-200 pb-6 mb-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200" />
-                  <div className="flex-1">
-                    <div className="h-3 bg-gray-200 rounded w-24 mb-1" />
-                    <div className="h-2 bg-gray-200 rounded w-16" />
-                  </div>
-                </div>
-                <div className="w-full aspect-[4/3] bg-gray-200 rounded mb-3" />
-                <div className="h-3 bg-gray-200 rounded w-3/4" />
-              </div>
-            ))}
-          </div>
-        ) : blogs.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-lg font-medium mb-2">No stories yet</p>
-            <p className="text-sm mb-4">Be the first to share a sustainable story!</p>
+      {/* Divider */}
+      <div className="border-t border-gray-100 mb-6" />
+
+      {/* Feed */}
+      {loading ? (
+        <div>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
+      ) : blogs.length === 0 ? (
+        <div className="text-center py-24">
+          <div className="text-5xl mb-4">🌱</div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No stories yet</h3>
+          <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
+            Be the first to share a story about sustainable living, eco tips, or green inspiration.
+          </p>
+          {user ? (
             <Link href="/blogs/new" className="btn-primary">Write a Story</Link>
-          </div>
-        ) : (
-          <div>
-            {blogs.map(blog => <PostCard key={blog.id} blog={blog} />)}
-            <div className="text-center py-8">
-              <Link href="/blogs" className="text-sm font-semibold text-forest-600 hover:underline">
-                View all stories →
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Right sidebar — desktop only */}
-      <aside className="hidden lg:block w-[320px] pt-6 px-6 sticky top-0 h-screen overflow-y-auto shrink-0">
-        {/* Trending topics */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-500 flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-forest-500" />
-              Trending Topics
-            </span>
-            <Link href="/categories" className="text-xs font-semibold text-forest-600 hover:underline">See all</Link>
-          </div>
-          <div className="flex flex-col gap-2">
-            {TRENDING_TOPICS.map(topic => (
-              <Link key={topic.slug} href={`/categories/${topic.slug}`}
-                className="flex items-center justify-between py-1.5 hover:text-forest-600 transition group">
-                <span className="text-sm text-gray-900 group-hover:text-forest-600">{topic.name}</span>
-                <span className="text-xs text-gray-400">→</span>
-              </Link>
-            ))}
-          </div>
+          ) : (
+            <Link href="/register" className="btn-primary">Join & Write</Link>
+          )}
         </div>
-
-        {/* Footer links */}
-        <div className="text-xs text-gray-400 leading-relaxed">
-          <div className="flex flex-wrap gap-x-2 gap-y-1 mb-2">
-            <Link href="/blogs" className="hover:underline">Explore</Link>
-            <span>·</span>
-            <Link href="/categories" className="hover:underline">Topics</Link>
-            <span>·</span>
-            <Link href="/register" className="hover:underline">Join</Link>
-            <span>·</span>
-            <Link href="/dashboard" className="hover:underline">Profile</Link>
+      ) : (
+        <>
+          {blogs.map(blog => <PostCard key={blog.id} blog={blog} />)}
+          <div className="text-center pt-4 pb-8">
+            <Link href="/blogs"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-forest-600 hover:text-forest-700 border border-forest-200 hover:border-forest-400 px-6 py-2.5 rounded-full transition-all duration-200">
+              Explore all stories
+            </Link>
           </div>
-          <p>© {new Date().getFullYear()} BeLife · Made for the planet 🌍</p>
-        </div>
-      </aside>
+        </>
+      )}
     </div>
   );
 }
