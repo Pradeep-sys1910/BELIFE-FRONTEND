@@ -45,11 +45,27 @@ function PostCard({ blog }: { blog: Blog }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [likes, setLikes] = useState(blog._count.likes);
+  const [liking, setLiking] = useState(false);
 
-  const handleLike = () => {
+  const handleLike = async () => {
     if (!user) { router.push('/login'); return; }
-    setLiked(l => !l);
-    setLikes(n => liked ? n - 1 : n + 1);
+    if (liking) return;
+    // Optimistic update
+    const wasLiked = liked;
+    setLiked(!wasLiked);
+    setLikes(n => wasLiked ? n - 1 : n + 1);
+    setLiking(true);
+    try {
+      const { data } = await api.post(`/blogs/${blog.id}/like`);
+      setLiked(data.liked);
+      setLikes(data.count);
+    } catch {
+      // Revert on error
+      setLiked(wasLiked);
+      setLikes(n => wasLiked ? n + 1 : n - 1);
+    } finally {
+      setLiking(false);
+    }
   };
 
   const handleSave = () => {
@@ -112,7 +128,7 @@ function PostCard({ blog }: { blog: Blog }) {
               className={`w-5 h-5 transition group-hover:text-red-500 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
               strokeWidth={liked ? 0 : 1.8}
             />
-            <span className={`text-xs font-medium ${liked ? 'text-red-500' : 'text-gray-400'}`}>{likes > 0 ? likes : ''}</span>
+            <span className={`text-xs font-medium ${liked ? 'text-red-500' : 'text-gray-400'}`}>{likes}</span>
           </button>
           <Link
             href={`/blogs/${blog.slug}#comments`}
