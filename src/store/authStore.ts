@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import type { StateCreator } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import Cookies from 'js-cookie';
 
 interface User {
@@ -9,6 +9,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  bio?: string;
   verified: boolean;
 }
 
@@ -19,17 +20,23 @@ interface AuthState {
   logout: () => void;
 }
 
-const creator: StateCreator<AuthState> = (set) => ({
-  user: null,
-  token: null,
-  setUser: (user: User, token: string) => {
-    Cookies.set('belife_token', token, { expires: 7 });
-    set({ user, token });
-  },
-  logout: () => {
-    Cookies.remove('belife_token');
-    set({ user: null, token: null });
-  },
-});
-
-export const useAuthStore = create<AuthState>()(creator);
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      setUser: (user, token) => {
+        Cookies.set('belife_token', token, { expires: 7 });
+        set({ user, token });
+      },
+      logout: () => {
+        Cookies.remove('belife_token');
+        set({ user: null, token: null });
+      },
+    }),
+    {
+      name: 'belife-auth',
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);

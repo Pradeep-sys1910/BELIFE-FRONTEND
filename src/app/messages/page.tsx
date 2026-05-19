@@ -26,7 +26,7 @@ function Avatar({ user, size = 10 }: { user: OtherUser; size?: number }) {
 }
 
 export default function MessagesPage() {
-  const { user, token } = useAuthStore() as any;
+  const { user, token } = useAuthStore();
   const router = useRouter();
   const [convs, setConvs] = useState<Conversation[]>([]);
   const [active, setActive] = useState<{ conv: Conversation; messages: Message[] } | null>(null);
@@ -39,7 +39,7 @@ export default function MessagesPage() {
     if (!user) { router.push('/login'); return; }
     api.get('/messages').then(r => setConvs(r.data)).catch(() => {});
 
-    const sock = getSocket(token || localStorage.getItem('token') || '');
+    const sock = getSocket(token || '');
     sock.on('new_message', (msg: Message) => {
       setActive(prev => {
         if (!prev) return prev;
