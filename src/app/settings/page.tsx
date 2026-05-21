@@ -151,29 +151,33 @@ function ProfileTab({ user, token, setUser }: { user: any; token: string | null;
 function AccountTab() {
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [saving, setSaving] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm' | 'sending' | 'sent'>('idle');
+  const [deleteInput, setDeleteInput] = useState('');
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.newPassword !== form.confirmPassword) {
-      toast.error('New passwords do not match');
-      return;
-    }
-    if (form.newPassword.length < 8) {
-      toast.error('Password must be at least 8 characters');
-      return;
-    }
+    if (form.newPassword !== form.confirmPassword) { toast.error('New passwords do not match'); return; }
+    if (form.newPassword.length < 8) { toast.error('Password must be at least 8 characters'); return; }
     setSaving(true);
     try {
-      await api.patch('/users/password', {
-        currentPassword: form.currentPassword,
-        newPassword: form.newPassword,
-      });
+      await api.patch('/users/password', { currentPassword: form.currentPassword, newPassword: form.newPassword });
       toast.success('Password changed successfully');
       setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to change password');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRequestDelete = async () => {
+    setDeleteStep('sending');
+    try {
+      await api.post('/auth/request-delete');
+      setDeleteStep('sent');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to send deletion email. Try again.');
+      setDeleteStep('confirm');
     }
   };
 
@@ -214,12 +218,84 @@ function AccountTab() {
         </button>
       </form>
 
+      {/* Danger zone */}
       <div className="mt-10 pt-8 border-t border-gray-100">
-        <h3 className="text-sm font-semibold text-red-600 mb-2">Danger zone</h3>
-        <p className="text-xs text-gray-500 mb-3">Once you delete your account, all your data will be permanently removed.</p>
-        <button className="text-sm font-medium text-red-500 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-50 transition">
-          Delete account
-        </button>
+        <h3 className="text-sm font-semibold text-red-600 mb-1">Danger zone</h3>
+
+        {deleteStep === 'idle' && (
+          <>
+            <p className="text-xs text-gray-500 mb-3">
+              Permanently delete your account and all associated data. This cannot be undone.
+            </p>
+            <button onClick={() => setDeleteStep('confirm')}
+              className="text-sm font-medium text-red-500 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-50 transition">
+              Delete account
+            </button>
+          </>
+        )}
+
+        {deleteStep === 'confirm' && (
+          <div className="mt-2 bg-red-50 border border-red-200 rounded-xl p-5 space-y-4">
+            <div className="space-y-1.5">
+              <p className="text-sm font-semibold text-red-700">Before you proceed, understand what this means:</p>
+              {[
+                'Your profile and all personal data will be permanently deleted',
+                'All blog posts and articles you published will be deleted',
+                'All comments, likes, messages and conversations will be removed',
+                'BeLife retains a license to use any content you already published (per our Terms)',
+                'Any user or the platform may continue to use your published content',
+              ].map(item => (
+                <div key={item} className="flex items-start gap-2 text-xs text-red-800">
+                  <span className="shrink-0 mt-0.5">✕</span><span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-red-700 mb-1.5">
+                Type <span className="font-mono bg-red-100 px-1 rounded">DELETE</span> to confirm
+              </label>
+              <input
+                type="text"
+                placeholder="DELETE"
+                value={deleteInput}
+                onChange={e => setDeleteInput(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-red-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              <button onClick={() => { setDeleteStep('idle'); setDeleteInput(''); }}
+                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
+                Cancel
+              </button>
+              <button
+                onClick={handleRequestDelete}
+                disabled={deleteInput !== 'DELETE'}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed">
+                Send confirmation email
+              </button>
+            </div>
+          </div>
+        )}
+
+        {deleteStep === 'sending' && (
+          <div className="mt-2 flex items-center gap-3 text-sm text-gray-500 p-4">
+            <Loader2 className="w-4 h-4 animate-spin text-red-400" />
+            Sending confirmation email...
+          </div>
+        )}
+
+        {deleteStep === 'sent' && (
+          <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-5">
+            <p className="text-sm font-semibold text-amber-900 mb-1">Check your inbox</p>
+            <p className="text-xs text-amber-700 leading-relaxed">
+              We've sent a confirmation link to your email. Click it to permanently delete your account.
+              The link expires in <strong>1 hour</strong>. If you change your mind, just ignore the email
+              — your account stays active.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
