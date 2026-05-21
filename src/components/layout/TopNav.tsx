@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, PlusSquare, LogOut, Leaf } from 'lucide-react';
+import { Search, PlusSquare, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useState } from 'react';
 
@@ -23,9 +24,8 @@ export default function TopNav() {
     <header className="top-nav">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1.5 shrink-0">
-          <Leaf className="w-6 h-6 text-forest-600" />
-          <span className="text-xl font-serif font-bold text-forest-700 hidden sm:block">BeLife</span>
+        <Link href="/dashboard" className="shrink-0">
+          <Image src="/logo.png" alt="BeLife" width={100} height={36} className="object-contain" priority />
         </Link>
 
         {/* Search bar */}

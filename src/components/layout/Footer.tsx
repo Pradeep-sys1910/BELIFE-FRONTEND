@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { Leaf, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import Image from 'next/image';
+import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
     <footer className="bg-forest-800 text-cream-100 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 mb-12">
         <div>
-          <Link href="/" className="flex items-center gap-2 mb-4">
-            <Leaf className="w-8 h-8 text-sage-400" />
-            <span className="text-3xl font-serif font-bold text-cream-50">BeLife</span>
+          <Link href="/dashboard" className="inline-block mb-4">
+            <Image src="/logo.png" alt="BeLife" width={130} height={48} className="object-contain brightness-0 invert" />
           </Link>
           <p className="text-sm opacity-80 mb-6">Living in harmony with nature, one story at a time.</p>
           <div className="flex gap-3">

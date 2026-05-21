@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, Tag, PenSquare, User, Leaf, LogOut, MessageCircle, Settings } from 'lucide-react';
+import { Home, Compass, Tag, PenSquare, User, LogOut, MessageCircle, Settings } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 const navItems = [
@@ -25,9 +26,8 @@ export default function SideNav() {
   return (
     <nav className="hidden md:flex bg-white border-r border-gray-200 fixed left-0 top-0 h-screen w-[244px] flex-col py-8 px-4 z-50">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 px-3 pb-8">
-        <Leaf className="w-7 h-7 text-forest-600" />
-        <span className="text-xl font-serif font-bold text-forest-700">BeLife</span>
+      <Link href="/dashboard" className="flex items-center px-3 pb-8">
+        <Image src="/logo.png" alt="BeLife" width={120} height={44} className="object-contain" priority />
       </Link>
 
       {/* Nav items */}

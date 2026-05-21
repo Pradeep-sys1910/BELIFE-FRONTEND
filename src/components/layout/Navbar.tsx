@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
-import { Search, Menu, X, Leaf } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 export default function Navbar() {
@@ -12,9 +13,8 @@ export default function Navbar() {
   return (
     <nav className="absolute top-0 left-0 right-0 z-50 bg-transparent">
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Leaf className="w-8 h-8 text-forest-600" />
-          <span className="text-3xl font-serif font-bold text-forest-700">BeLife</span>
+        <Link href="/dashboard">
+          <Image src="/logo.png" alt="BeLife" width={140} height={52} className="object-contain" priority />
         </Link>
 
         <div className="hidden lg:flex items-center gap-10">
