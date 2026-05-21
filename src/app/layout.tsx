@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-white text-gray-900 font-sans antialiased">
         <div className="flex min-h-screen">
           <SideNav />
-          <main className="flex-1 md:ml-[244px] pb-16 md:pb-0 min-w-0">
+          <main className="flex-1 md:ml-[244px] pb-20 md:pb-0 min-w-0">
             {children}
           </main>
         </div>
