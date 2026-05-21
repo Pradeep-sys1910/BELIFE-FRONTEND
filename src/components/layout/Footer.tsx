@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="bg-forest-800 text-cream-100 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 mb-12">
         <div>
-          <Link href="/dashboard" className="inline-block bg-white rounded-xl px-3 py-2 mb-4">
+          <Link href="/dashboard" className="inline-block mb-4">
             <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" />
           </Link>
           <p className="text-sm opacity-80 mb-6">Living in harmony with nature, one story at a time.</p>

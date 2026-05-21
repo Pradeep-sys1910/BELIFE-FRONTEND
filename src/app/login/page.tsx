@@ -153,7 +153,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-white">
       {/* Left brand panel — desktop only */}
       <div className="hidden lg:flex w-[480px] bg-forest-700 flex-col justify-between p-12 shrink-0">
-        <Link href="/" className="inline-block bg-white rounded-xl px-3 py-2">
+        <Link href="/" className="inline-block">
           <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" priority />
         </Link>
         <div>
