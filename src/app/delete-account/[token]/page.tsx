@@ -90,14 +90,10 @@ export default function DeleteAccountPage() {
           ))}
         </div>
 
-        {/* License notice */}
         <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 mb-6">
           <p className="text-xs text-amber-800 leading-relaxed">
-            <strong>Content license notice:</strong> As per BeLife's{' '}
-            <Link href="/terms" className="underline hover:text-amber-900">Terms of Service</Link>,
-            BeLife retains a perpetual license to use any content you have previously published
-            on the platform. Any user or the platform may continue to use that content.
-            Publicly visible content may remain in cached or archived form.
+            <strong>Your content belongs to you.</strong> BeLife does not own any content you have posted.
+            Once your account is deleted, your content will be removed from our platform.
           </p>
         </div>
 

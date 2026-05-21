@@ -242,8 +242,7 @@ function AccountTab() {
                 'Your profile and all personal data will be permanently deleted',
                 'All blog posts and articles you published will be deleted',
                 'All comments, likes, messages and conversations will be removed',
-                'BeLife retains a license to use any content you already published (per our Terms)',
-                'Any user or the platform may continue to use your published content',
+                'BeLife does not own your content — once deleted, it will be removed from our platform',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2 text-xs text-red-800">
                   <span className="shrink-0 mt-0.5">✕</span><span>{item}</span>

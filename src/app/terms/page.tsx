@@ -53,27 +53,20 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. User-Generated Content — Ownership & License</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. User-Generated Content — Ownership</h2>
           <p>
             <strong>You retain full ownership of all content you post</strong>, including but not limited to
-            blog posts, comments, images, and messages ("User Content"). BeLife does not claim ownership of
-            your content.
+            blog posts, comments, images, and messages ("User Content"). BeLife does not claim ownership of,
+            and has no rights over, any content you publish on the Platform.
           </p>
           <p className="mt-3">
-            However, by posting User Content on BeLife, you grant BeLife a <strong>worldwide, non-exclusive,
-            royalty-free, perpetual, irrevocable, sublicensable, and transferable license</strong> to use,
-            reproduce, distribute, display, publish, translate, adapt, and create derivative works of your
-            content in connection with operating, promoting, and improving the Platform across any media or
-            distribution method, now known or later developed.
+            You are solely responsible for the content you post. By publishing content on BeLife, you
+            confirm that you own the rights to that content or have the necessary permissions to share it,
+            and that it does not infringe the rights of any third party.
           </p>
           <p className="mt-3">
-            This license continues even if you delete your content or account, to the extent that copies
-            have already been made, cached, or distributed by third parties as part of normal Platform
-            operations.
-          </p>
-          <p className="mt-3">
-            You represent and warrant that you have all rights necessary to grant this license and that your
-            content does not infringe the rights of any third party.
+            If you delete your account or your content, BeLife will remove it from the Platform. BeLife
+            does not retain any rights to your content after deletion.
           </p>
         </section>
 
