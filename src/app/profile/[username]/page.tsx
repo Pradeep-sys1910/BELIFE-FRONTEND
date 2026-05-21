@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 interface PublicUser {
   id: string;
@@ -28,6 +30,8 @@ interface Blog {
 
 export default function PublicProfilePage() {
   const { username } = useParams<{ username: string }>();
+  const router = useRouter();
+  const { user: currentUser } = useAuthStore();
   const [user, setUser] = useState<PublicUser | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,6 +99,14 @@ export default function PublicProfilePage() {
           <p className="text-xs text-gray-400 mt-1">
             Member since {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
           </p>
+          {currentUser && currentUser.id !== user.id && (
+            <button
+              onClick={() => router.push(`/messages?with=${user.id}`)}
+              className="mt-3 flex items-center gap-2 text-sm font-semibold text-forest-600 border border-forest-200 px-4 py-2 rounded-full hover:bg-forest-50 transition">
+              <MessageCircle className="w-4 h-4" />
+              Message
+            </button>
+          )}
         </div>
       </header>
 

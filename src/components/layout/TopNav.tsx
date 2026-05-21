@@ -15,7 +15,7 @@ export default function TopNav() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (search.trim()) router.push(`/blogs?search=${encodeURIComponent(search.trim())}`);
+    if (search.trim()) router.push(`/search?q=${encodeURIComponent(search.trim())}`);
   };
 
   const handleLogout = () => { logout(); router.push('/'); };
@@ -35,7 +35,7 @@ export default function TopNav() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search stories..."
+              placeholder="Search people or stories..."
               className="w-full pl-9 pr-4 py-2 bg-cream-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-forest-500"
             />
           </div>
