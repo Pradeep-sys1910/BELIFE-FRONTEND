@@ -2,20 +2,33 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Leaf } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', username: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
+  const handleUsername = (val: string) => {
+    // auto-lowercase, strip invalid chars as user types
+    setForm({ ...form, username: val.toLowerCase().replace(/[^a-z0-9_]/g, '') });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.username.length < 3) {
+      toast.error('Username must be at least 3 characters.');
+      return;
+    }
     setLoading(true);
     try {
-      await api.post('/auth/register', form);
+      await api.post('/auth/register', {
+        ...form,
+        email: form.email.toLowerCase().trim(),
+      });
       setDone(true);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Registration failed. Try again.');
@@ -28,9 +41,8 @@ export default function RegisterPage() {
     <div className="min-h-screen flex bg-white">
       {/* Left brand panel — desktop only */}
       <div className="hidden lg:flex w-[480px] bg-forest-700 flex-col justify-between p-12 shrink-0">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Leaf className="w-7 h-7 text-forest-300" />
-          <span className="text-xl font-serif font-bold text-white">BeLife</span>
+        <Link href="/">
+          <Image src="/logo.png" alt="BeLife" width={130} height={48} className="object-contain brightness-0 invert" priority />
         </Link>
         <div>
           <h2 className="text-white text-3xl font-serif font-bold leading-snug mb-4">
@@ -49,13 +61,11 @@ export default function RegisterPage() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
-          <Link href="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <Leaf className="w-6 h-6 text-forest-600" />
-            <span className="text-lg font-serif font-bold text-forest-700">BeLife</span>
+          <Link href="/" className="inline-block mb-10 lg:hidden">
+            <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" priority />
           </Link>
 
           {done ? (
-            /* Success state */
             <div className="text-center py-8">
               <div className="w-14 h-14 rounded-full bg-forest-50 border-2 border-forest-200 flex items-center justify-center mx-auto mb-5">
                 <Leaf className="w-7 h-7 text-forest-600" />
@@ -87,7 +97,21 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Work email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Username <span className="text-gray-400 font-normal">(your unique @id)</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">@</span>
+                    <input type="text" required placeholder="jane_smith" minLength={3} maxLength={20}
+                      value={form.username}
+                      onChange={e => handleUsername(e.target.value)}
+                      className="w-full pl-7 pr-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">3–20 chars · letters, numbers, underscores only</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                   <input type="email" required placeholder="you@example.com"
                     value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
