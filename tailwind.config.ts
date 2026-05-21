@@ -9,64 +9,85 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Instagram-like neutrals
         cream: {
-          50: '#FAFAFA',   // Instagram bg
-          100: '#F5F5F5',
-          200: '#EFEFEF',  // Instagram border
+          50: '#FAFAF9',
+          100: '#F5F5F0',
+          200: '#EEEEE8',
         },
-        // Modern vibrant green brand
         forest: {
-          50: '#F0FDF4',
-          100: '#DCFCE7',
-          400: '#4ADE80',
-          500: '#22C55E',
-          600: '#16A34A',
-          700: '#15803D',
-          800: '#166534',
+          50:  '#F2F7F4',
+          100: '#E1EDE6',
+          200: '#BDD5C6',
+          300: '#90B9A0',
+          400: '#5E9877',
+          500: '#3D7A5A',
+          600: '#2A6145',
+          700: '#1E4D35',
+          800: '#133426',
+          900: '#0A1F16',
         },
         sage: {
-          100: '#DCFCE7',
-          400: '#4ADE80',
-          500: '#22C55E',
+          100: '#E1EDE6',
+          400: '#5E9877',
+          500: '#3D7A5A',
         },
-        // Social accent colors
-        like: '#EF4444',
-        link: '#16A34A',
+        like: '#E8445A',
+        link: '#2A6145',
       },
       fontFamily: {
-        serif: ['Playfair Display', 'serif'],
-        sans: ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-out',
-        'slide-up': 'slideUp 0.3s ease-out',
-        'pop': 'pop 0.2s ease-out',
-        'float': 'float 6s ease-in-out infinite',
+        'fade-in':    'fadeIn 0.4s ease-out both',
+        'fade-in-fast': 'fadeIn 0.2s ease-out both',
+        'slide-up':   'slideUp 0.4s ease-out both',
+        'slide-up-sm':'slideUpSm 0.3s ease-out both',
+        'pop':        'pop 0.25s ease-out',
+        'shimmer':    'shimmer 1.6s infinite',
+        'float':      'float 6s ease-in-out infinite',
+        'scale-in':   'scaleIn 0.2s ease-out both',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
+          '0%':   { opacity: '0' },
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '0%':   { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideUpSm: {
+          '0%':   { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         pop: {
-          '0%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.3)' },
+          '0%':   { transform: 'scale(1)' },
+          '50%':  { transform: 'scale(1.25)' },
           '100%': { transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%':   { backgroundPosition: '-400px 0' },
+          '100%': { backgroundPosition: '400px 0' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '50%':      { transform: 'translateY(-8px)' },
+        },
+        scaleIn: {
+          '0%':   { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
       boxShadow: {
-        'card': '0 1px 3px rgba(0,0,0,0.08)',
-        'card-hover': '0 8px 24px rgba(0,0,0,0.12)',
-        'nav': '0 -1px 0 rgba(0,0,0,0.08)',
+        'card':        '0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        'card-hover':  '0 10px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)',
+        'nav':         '0 -1px 0 rgba(0,0,0,0.06)',
+        'dropdown':    '0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+        'modal':       '0 24px 64px rgba(0,0,0,0.18)',
       },
     },
   },

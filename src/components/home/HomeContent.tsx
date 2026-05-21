@@ -74,7 +74,7 @@ function PostCard({ blog }: { blog: Blog }) {
   };
 
   return (
-    <article className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <article className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4 shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <Link href={blog.author.username ? `/profile/${blog.author.username}` : '#'} className="flex items-center gap-2.5 group">
@@ -161,19 +161,19 @@ function PostCard({ blog }: { blog: Blog }) {
 
 function SkeletonCard() {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-5 animate-pulse">
+    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-4">
       <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
-        <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0" />
-        <div className="flex-1">
-          <div className="h-3 bg-gray-200 rounded w-28 mb-1.5" />
-          <div className="h-2 bg-gray-200 rounded w-20" />
+        <div className="skeleton w-9 h-9 rounded-full shrink-0" />
+        <div className="flex-1 space-y-1.5">
+          <div className="skeleton h-3 w-28 rounded" />
+          <div className="skeleton h-2.5 w-20 rounded" />
         </div>
       </div>
-      <div className="w-full aspect-[16/9] bg-gray-200" />
-      <div className="px-4 pt-3 pb-4">
-        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-        <div className="h-3 bg-gray-200 rounded w-full mb-1" />
-        <div className="h-3 bg-gray-200 rounded w-2/3" />
+      <div className="skeleton w-full aspect-[16/9]" style={{ borderRadius: 0 }} />
+      <div className="px-4 pt-3 pb-4 space-y-2">
+        <div className="skeleton h-4 w-3/4 rounded" />
+        <div className="skeleton h-3 w-full rounded" />
+        <div className="skeleton h-3 w-2/3 rounded" />
       </div>
     </div>
   );
@@ -242,7 +242,11 @@ export default function HomeContent() {
         </div>
       ) : (
         <>
-          {blogs.map(blog => <PostCard key={blog.id} blog={blog} />)}
+          {blogs.map((blog, i) => (
+            <div key={blog.id} className="animate-slide-up" style={{ animationDelay: `${i * 0.06}s` }}>
+              <PostCard blog={blog} />
+            </div>
+          ))}
           <div className="text-center pt-4 pb-8">
             <Link href="/blogs"
               className="inline-flex items-center gap-2 text-sm font-semibold text-forest-600 hover:text-forest-700 border border-forest-200 hover:border-forest-400 px-6 py-2.5 rounded-full transition-all duration-200">

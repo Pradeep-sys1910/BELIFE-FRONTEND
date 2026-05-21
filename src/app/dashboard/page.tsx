@@ -37,7 +37,7 @@ export default function DashboardPage() {
     <div className="max-w-[630px] mx-auto px-4 pt-8 pb-24">
 
       {/* Profile header */}
-      <header className="flex flex-col items-center md:flex-row md:items-start gap-6 mb-10">
+      <header className="flex flex-col items-center md:flex-row md:items-start gap-6 mb-10 animate-fade-in">
 
         {/* Avatar */}
         <div className="w-24 h-24 md:w-32 md:h-32 rounded-full p-[3px] bg-gradient-to-tr from-forest-400 to-forest-700 shrink-0">
@@ -107,9 +107,9 @@ export default function DashboardPage() {
 
       {/* Posts grid */}
       {loading ? (
-        <div className="grid grid-cols-3 gap-1">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+        <div className="grid grid-cols-3 gap-[3px]">
+          {[...Array(9)].map((_, i) => (
+            <div key={i} className="skeleton aspect-square" style={{ borderRadius: 0 }} />
           ))}
         </div>
       ) : blogs.length === 0 ? (
