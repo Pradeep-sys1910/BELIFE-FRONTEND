@@ -25,20 +25,18 @@ export default function Footer() {
         <div>
           <h4 className="font-serif text-lg mb-4 text-cream-50">Explore</h4>
           <ul className="space-y-2 text-sm opacity-80">
-            <li><Link href="/blogs">All Blogs</Link></li>
-            <li><Link href="/categories">Categories</Link></li>
-            <li><Link href="/authors">Authors</Link></li>
+            <li><Link href="/blogs">All Stories</Link></li>
             <li><Link href="/about">About Us</Link></li>
+            <li><Link href="/contact">Contact</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="font-serif text-lg mb-4 text-cream-50">Resources</h4>
+          <h4 className="font-serif text-lg mb-4 text-cream-50">Account</h4>
           <ul className="space-y-2 text-sm opacity-80">
-            <li><Link href="/guides">Guides</Link></li>
-            <li><Link href="/podcasts">Podcasts</Link></li>
-            <li><Link href="/community">Community</Link></li>
-            <li><Link href="/contact">Contact</Link></li>
+            <li><Link href="/register">Join BeLife</Link></li>
+            <li><Link href="/login">Sign In</Link></li>
+            <li><Link href="/blogs/new">Write a Story</Link></li>
           </ul>
         </div>
 

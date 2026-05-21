@@ -16,7 +16,7 @@ interface Blog {
   image: string;
   readTime: number;
   createdAt: string;
-  author: { name: string; avatar?: string };
+  author: { name: string; username?: string; avatar?: string };
   category: { name: string; slug: string };
   _count: { likes: number; comments: number };
 }
@@ -77,7 +77,7 @@ function PostCard({ blog }: { blog: Blog }) {
     <article className="bg-white border border-gray-100 rounded-2xl overflow-hidden mb-5 shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <Link href={`/profile/${blog.author.name}`} className="flex items-center gap-2.5 group">
+        <Link href={blog.author.username ? `/profile/${blog.author.username}` : '#'} className="flex items-center gap-2.5 group">
           <Avatar name={blog.author.name} avatar={blog.author.avatar} size={9} />
           <div>
             <p className="text-sm font-semibold text-gray-900 group-hover:text-forest-600 transition leading-tight">{blog.author.name}</p>
