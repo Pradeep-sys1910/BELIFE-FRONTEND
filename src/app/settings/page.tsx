@@ -28,8 +28,11 @@ export default function SettingsPage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-[800px] mx-auto px-4 pt-8 pb-16">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-8">Settings</h1>
+    <div className="max-w-[820px] mx-auto px-4 pt-8 pb-16">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Settings</h1>
+        <p className="text-sm text-gray-400 mt-1">Manage your profile, security, and preferences</p>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar tabs */}
@@ -37,19 +40,20 @@ export default function SettingsPage() {
           <div className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible no-scrollbar pb-2 md:pb-0">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap
                   ${activeTab === id
-                    ? 'bg-forest-50 text-forest-700 font-semibold'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+                    ? 'bg-forest-50 text-forest-700 font-semibold border border-forest-100'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
                 <Icon className="w-4 h-4 shrink-0" strokeWidth={activeTab === id ? 2.5 : 1.8} />
                 {label}
+                {activeTab === id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-forest-500" />}
               </button>
             ))}
           </div>
         </nav>
 
         {/* Content panel */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 border border-gray-100 rounded-2xl p-6 shadow-card bg-white">
           {activeTab === 'profile' && <ProfileTab user={user} token={token} setUser={setUser} />}
           {activeTab === 'account' && <AccountTab />}
           {activeTab === 'notifications' && <NotificationsTab />}
@@ -104,31 +108,31 @@ function ProfileTab({ user, token, setUser }: { user: any; token: string | null;
 
       <form onSubmit={handleSave} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Display name</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display name</label>
           <input
             type="text"
             value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value })}
             required
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition bg-gray-50"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Bio</label>
           <textarea
             value={form.bio}
             onChange={e => setForm({ ...form, bio: e.target.value })}
             rows={4}
             maxLength={200}
             placeholder="Tell the community about yourself..."
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition bg-gray-50 resize-none"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200 resize-none"
           />
           <p className="text-xs text-gray-400 mt-1 text-right">{form.bio.length}/200</p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Email</label>
           <input
             type="email"
             value={user.email}
@@ -139,7 +143,7 @@ function ProfileTab({ user, token, setUser }: { user: any; token: string | null;
         </div>
 
         <button type="submit" disabled={saving}
-          className="flex items-center gap-2 bg-forest-700 hover:bg-forest-800 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-60">
+          className="flex items-center gap-2 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : null}
           {saving ? 'Saving...' : saved ? 'Saved!' : 'Save changes'}
         </button>
@@ -193,26 +197,26 @@ function AccountTab() {
       <h3 className="text-sm font-semibold text-gray-700 mb-4">Change password</h3>
       <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Current password</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Current password</label>
           <input type="password" required value={form.currentPassword}
             onChange={e => setForm({ ...form, currentPassword: e.target.value })}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">New password</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">New password</label>
           <input type="password" required minLength={8} value={form.newPassword}
             onChange={e => setForm({ ...form, newPassword: e.target.value })}
             placeholder="Min. 8 characters"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm new password</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Confirm new password</label>
           <input type="password" required value={form.confirmPassword}
             onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
         </div>
         <button type="submit" disabled={saving}
-          className="flex items-center gap-2 bg-forest-700 hover:bg-forest-800 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-60">
+          className="flex items-center gap-2 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
           {saving && <Loader2 className="w-4 h-4 animate-spin" />}
           {saving ? 'Updating...' : 'Update password'}
         </button>
@@ -339,7 +343,7 @@ function NotificationsTab() {
           </div>
         ))}
       </div>
-      <button className="mt-6 bg-forest-700 hover:bg-forest-800 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition"
+      <button className="mt-6 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
         onClick={() => toast.success('Preferences saved')}>
         Save preferences
       </button>
@@ -384,7 +388,7 @@ function PrivacyTab() {
           </div>
         ))}
       </div>
-      <button className="mt-6 bg-forest-700 hover:bg-forest-800 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition"
+      <button className="mt-6 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
         onClick={() => toast.success('Privacy settings saved')}>
         Save settings
       </button>

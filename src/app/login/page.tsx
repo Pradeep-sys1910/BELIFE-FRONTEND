@@ -151,76 +151,97 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-white">
-      {/* Left brand panel — desktop only */}
-      <div className="hidden lg:flex w-[480px] bg-forest-700 flex-col justify-between p-12 shrink-0">
-        <Link href="/" className="inline-block">
-          <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" priority />
+
+      {/* ── Left brand panel ── */}
+      <div className="hidden lg:flex w-[460px] shrink-0 flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, #091810 0%, #112A1C 45%, #1E4530 100%)' }}>
+        {/* Decorative glow */}
+        <div className="absolute top-[-80px] right-[-80px] w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(62,122,90,0.25) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-[-60px] left-[-60px] w-64 h-64 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(62,122,90,0.15) 0%, transparent 70%)' }} />
+
+        <Link href="/" className="relative z-10">
+          <Image src="/logo.png" alt="BeLife" width={120} height={44} className="object-contain" priority />
         </Link>
-        <div>
-          <blockquote className="text-forest-100 text-2xl font-serif leading-snug mb-6">
+
+        <div className="relative z-10">
+          <div className="w-8 h-0.5 bg-forest-500 mb-6 rounded-full" />
+          <blockquote className="text-white/90 text-xl font-serif leading-relaxed mb-5">
             "{fact.text}"
           </blockquote>
-          <p className="text-forest-400 text-sm">— {fact.author}</p>
+          <p className="text-forest-400 text-sm font-medium">— {fact.author}</p>
         </div>
-        <p className="text-forest-500 text-xs">© {new Date().getFullYear()} BeLife</p>
+
+        <p className="text-forest-700 text-xs relative z-10">© {new Date().getFullYear()} BeLife</p>
       </div>
 
-      {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-[380px]">
-          {/* Mobile logo */}
+      {/* ── Right form panel ── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
+        <div className="w-full max-w-[360px] animate-fade-in">
+
           <Link href="/" className="inline-block mb-10 lg:hidden">
             <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" priority />
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Sign in</h1>
-            <p className="text-gray-500 text-sm mt-1">Welcome back to BeLife</p>
+            <h1 className="text-[26px] font-semibold text-gray-900 tracking-tight leading-tight">Welcome back</h1>
+            <p className="text-gray-400 text-sm mt-1.5">Sign in to continue to BeLife</p>
           </div>
 
-          {/* Unverified email notice */}
           {unverified && (
-            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm font-medium text-amber-900 mb-1">Email not verified</p>
-              <p className="text-xs text-amber-700 mb-3">
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+              <p className="text-sm font-semibold text-amber-900 mb-1">Email not verified</p>
+              <p className="text-xs text-amber-700 mb-3 leading-relaxed">
                 Check your inbox for a verification link, or request a new one.
               </p>
               <button onClick={handleResend} disabled={resending}
-                className="text-xs font-semibold text-amber-900 underline underline-offset-2 disabled:opacity-60">
-                {resending ? 'Sending...' : 'Resend verification email'}
+                className="text-xs font-semibold text-amber-800 underline underline-offset-2 disabled:opacity-60">
+                {resending ? 'Sending...' : 'Resend verification email →'}
               </button>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Email</label>
               <input type="email" required placeholder="you@example.com"
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400
+                           focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-sm font-medium text-gray-700">Password</label>
-                <Link href="/forgot-password" className="text-xs text-forest-600 hover:underline">Forgot password?</Link>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Password</label>
+                <Link href="/forgot-password" className="text-xs text-forest-600 hover:text-forest-700 font-medium transition-colors">Forgot?</Link>
               </div>
               <input type="password" required placeholder="••••••••"
                 value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent transition" />
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400
+                           focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-forest-700 hover:bg-forest-800 text-white py-2.5 rounded-lg text-sm font-semibold transition disabled:opacity-60 mt-2">
-              {loading ? 'Signing in...' : 'Sign in'}
+              className="w-full bg-forest-800 hover:bg-forest-900 text-white py-3 rounded-xl text-sm font-semibold
+                         transition-all duration-200 disabled:opacity-50 shadow-sm hover:shadow-md mt-1
+                         active:scale-[0.98]">
+              {loading ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-forest-700 font-semibold hover:underline">Create one</Link>
+          <div className="relative my-7">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-3 text-xs text-gray-400">or</span>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-gray-500">
+            New to BeLife?{' '}
+            <Link href="/register" className="text-forest-700 font-semibold hover:text-forest-800 transition-colors">Create an account</Link>
           </p>
         </div>
       </div>

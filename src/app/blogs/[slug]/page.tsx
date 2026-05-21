@@ -106,12 +106,23 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 pt-8 pb-24 animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-24 mb-8" />
-        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-        <div className="h-4 bg-gray-200 rounded w-1/2 mb-8" />
-        <div className="w-full aspect-video bg-gray-200 rounded-2xl mb-8" />
-        {[1,2,3,4].map(i => <div key={i} className="h-4 bg-gray-200 rounded mb-3" />)}
+      <div className="max-w-2xl mx-auto px-4 pt-8 pb-24">
+        <div className="skeleton h-4 w-28 rounded-full mb-8" />
+        <div className="skeleton h-9 w-4/5 rounded-lg mb-3" />
+        <div className="skeleton h-9 w-2/3 rounded-lg mb-5" />
+        <div className="skeleton h-5 w-full rounded-lg mb-2" />
+        <div className="skeleton h-5 w-4/5 rounded-lg mb-7" />
+        <div className="flex items-center gap-3 mb-7 pb-7 border-b border-gray-100">
+          <div className="skeleton w-11 h-11 rounded-full shrink-0" />
+          <div className="flex-1">
+            <div className="skeleton h-4 w-36 rounded mb-2" />
+            <div className="skeleton h-3 w-52 rounded" />
+          </div>
+        </div>
+        <div className="skeleton w-full aspect-video rounded-2xl mb-8" />
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className={`skeleton h-4 rounded mb-3 ${i % 4 === 0 ? 'w-2/3' : 'w-full'}`} />
+        ))}
       </div>
     );
   }
@@ -217,15 +228,22 @@ export default function BlogDetailPage() {
       )}
 
       {/* Author card */}
-      <div className="bg-gray-50 rounded-2xl p-5 mb-10">
-        <div className="flex items-center gap-3 mb-2">
-          <Avatar name={blog.author?.name} avatar={blog.author?.avatar} size={11} />
+      <div className="border border-gray-100 rounded-2xl p-6 mb-10 bg-white shadow-card">
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Written by</p>
+        <div className="flex items-center gap-4 mb-3">
+          <div className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-forest-400 to-forest-700 shrink-0">
+            {blog.author?.avatar
+              ? <img src={blog.author.avatar} alt={blog.author.name} className="w-full h-full rounded-full object-cover border-2 border-white" />
+              : <div className="w-full h-full rounded-full bg-forest-600 flex items-center justify-center text-white font-bold text-lg border-2 border-white">
+                  {blog.author?.name[0].toUpperCase()}
+                </div>
+            }
+          </div>
           <div>
             <p className="font-semibold text-gray-900">{blog.author?.name}</p>
-            <p className="text-xs text-gray-400">Author</p>
+            {blog.author?.bio && <p className="text-sm text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{blog.author.bio}</p>}
           </div>
         </div>
-        {blog.author?.bio && <p className="text-sm text-gray-600 leading-relaxed">{blog.author.bio}</p>}
       </div>
 
       {/* Comments */}
@@ -246,10 +264,10 @@ export default function BlogDetailPage() {
                   placeholder="Add a comment..."
                   rows={3}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-transparent resize-none transition"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white resize-none transition-all duration-200"
                 />
                 <button type="submit" disabled={submitting}
-                  className="mt-2 bg-forest-700 hover:bg-forest-800 text-white px-5 py-2 rounded-xl text-sm font-semibold transition disabled:opacity-60">
+                  className="mt-2 bg-forest-800 hover:bg-forest-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
                   {submitting ? 'Posting...' : 'Post'}
                 </button>
               </div>

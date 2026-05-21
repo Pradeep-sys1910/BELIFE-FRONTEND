@@ -2,56 +2,87 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+
+const links = {
+  explore: [
+    { href: '/blogs', label: 'All Stories' },
+    { href: '/categories', label: 'Topics' },
+    { href: '/search', label: 'Search' },
+    { href: '/about', label: 'About Us' },
+  ],
+  account: [
+    { href: '/register', label: 'Join BeLife' },
+    { href: '/login', label: 'Sign In' },
+    { href: '/blogs/new', label: 'Write a Story' },
+    { href: '/contact', label: 'Contact' },
+  ],
+  legal: [
+    { href: '/privacy', label: 'Privacy Policy' },
+    { href: '/terms', label: 'Terms of Service' },
+    { href: '/cookies', label: 'Cookie Policy' },
+  ],
+};
 
 export default function Footer() {
   return (
-    <footer className="bg-forest-800 text-cream-100 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 mb-12">
-        <div>
-          <Link href="/dashboard" className="inline-block mb-4">
-            <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" />
-          </Link>
-          <p className="text-sm opacity-80 mb-6">Living in harmony with nature, one story at a time.</p>
-          <div className="flex gap-3">
-            {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-              <a key={i} href="#" className="w-9 h-9 bg-forest-600 rounded-full flex items-center justify-center hover:bg-sage-400 transition">
-                <Icon className="w-4 h-4" />
-              </a>
-            ))}
+    <footer style={{ background: 'linear-gradient(160deg, #091810 0%, #0D2018 50%, #0A1A14 100%)' }}>
+      <div className="max-w-5xl mx-auto px-6 pt-14 pb-8">
+
+        {/* Top row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 pb-12 border-b border-white/[0.07]">
+
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-1">
+            <Link href="/" className="inline-block mb-4">
+              <Image src="/logo.png" alt="BeLife" width={120} height={44} className="object-contain brightness-[2] opacity-90" />
+            </Link>
+            <p className="text-sm text-white/40 leading-relaxed max-w-[200px]">
+              Sustainable living stories, one post at a time.
+            </p>
+          </div>
+
+          {/* Explore */}
+          <div>
+            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-4">Explore</p>
+            <ul className="space-y-2.5">
+              {links.explore.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="text-sm text-white/55 hover:text-white/90 transition-colors duration-150">{label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Account */}
+          <div>
+            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-4">Account</p>
+            <ul className="space-y-2.5">
+              {links.account.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="text-sm text-white/55 hover:text-white/90 transition-colors duration-150">{label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-4">Legal</p>
+            <ul className="space-y-2.5">
+              {links.legal.map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="text-sm text-white/55 hover:text-white/90 transition-colors duration-150">{label}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        
-        <div>
-          <h4 className="font-serif text-lg mb-4 text-cream-50">Explore</h4>
-          <ul className="space-y-2 text-sm opacity-80">
-            <li><Link href="/blogs">All Stories</Link></li>
-            <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/contact">Contact</Link></li>
-          </ul>
-        </div>
 
-        <div>
-          <h4 className="font-serif text-lg mb-4 text-cream-50">Account</h4>
-          <ul className="space-y-2 text-sm opacity-80">
-            <li><Link href="/register">Join BeLife</Link></li>
-            <li><Link href="/login">Sign In</Link></li>
-            <li><Link href="/blogs/new">Write a Story</Link></li>
-          </ul>
+        {/* Bottom row */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-white/25">© {new Date().getFullYear()} BeLife. All rights reserved.</p>
+          <p className="text-xs text-white/20">Made with care for the planet.</p>
         </div>
-
-        <div>
-          <h4 className="font-serif text-lg mb-4 text-cream-50">Legal</h4>
-          <ul className="space-y-2 text-sm opacity-80">
-            <li><Link href="/privacy">Privacy Policy</Link></li>
-            <li><Link href="/terms">Terms of Service</Link></li>
-            <li><Link href="/cookies">Cookie Policy</Link></li>
-          </ul>
-        </div>
-      </div>
-      
-      <div className="border-t border-forest-600 pt-6 text-center text-sm opacity-70">
-        © {new Date().getFullYear()} BeLife. Made with 🌿 for the planet.
       </div>
     </footer>
   );
