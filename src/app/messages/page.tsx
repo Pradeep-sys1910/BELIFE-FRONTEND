@@ -40,6 +40,23 @@ function MessagesContent() {
   const [searching, setSearching] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const openConv = useCallback(async (conv: Conversation) => {
+    const { data } = await api.get(`/messages/${conv.other.id}`);
+    setActive({ conv, messages: data.messages });
+    setShowList(false);
+  }, []);
+
+  const openDMWith = useCallback((target: OtherUser, existingConvs?: Conversation[]) => {
+    setShowCompose(false);
+    setUserSearch('');
+    setUserResults([]);
+    const list = existingConvs || convs;
+    const existing = list.find(c => c.other.id === target.id);
+    if (existing) { openConv(existing); return; }
+    setActive({ conv: { id: `new-${target.id}`, other: target, lastMessage: null }, messages: [] });
+    setShowList(false);
+  }, [convs, openConv]);
+
   const searchUsers = useCallback(async (q: string) => {
     if (!q.trim()) { setUserResults([]); return; }
     setSearching(true);
@@ -56,21 +73,6 @@ function MessagesContent() {
     return () => clearTimeout(timer);
   }, [userSearch]);
 
-  const openDMWith = async (target: OtherUser) => {
-    setShowCompose(false);
-    setUserSearch('');
-    setUserResults([]);
-    const existing = convs.find(c => c.other.id === target.id);
-    if (existing) { openConv(existing); return; }
-    const fakeConv: Conversation = {
-      id: `new-${target.id}`,
-      other: target,
-      lastMessage: null,
-    };
-    setActive({ conv: fakeConv, messages: [] });
-    setShowList(false);
-  };
-
   useEffect(() => {
     if (!user) { router.push('/login'); return; }
     api.get('/messages').then(r => {
@@ -79,14 +81,10 @@ function MessagesContent() {
       const withId = searchParams.get('with');
       if (withId) {
         const existing = convList.find((c: Conversation) => c.other.id === withId);
-        if (existing) openConv(existing);
-        else {
-          api.get('/users/search', { params: { q: withId } })
-            .then(res => {
-              const target = res.data.find((u: OtherUser) => u.id === withId);
-              if (target) openDMWith(target);
-            }).catch(() => {});
-        }
+        if (existing) { openConv(existing); return; }
+        api.get(`/users/by-id/${withId}`)
+          .then(res => openDMWith(res.data, convList))
+          .catch(() => {});
       }
     }).catch(() => {});
 
@@ -111,12 +109,6 @@ function MessagesContent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [active?.messages]);
-
-  const openConv = async (conv: Conversation) => {
-    const { data } = await api.get(`/messages/${conv.other.id}`);
-    setActive({ conv, messages: data.messages });
-    setShowList(false);
-  };
 
   const sendMsg = async () => {
     if (!text.trim() || !active || sending) return;
