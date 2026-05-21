@@ -27,7 +27,7 @@ export default function SideNav() {
     <nav className="hidden md:flex bg-white border-r border-gray-200 fixed left-0 top-0 h-screen w-[244px] flex-col py-8 px-4 z-50">
       {/* Logo */}
       <Link href="/dashboard" className="flex items-center px-3 pb-8">
-        <Image src="/logo.png" alt="BeLife" width={120} height={44} className="object-contain" priority />
+        <Image src="/logo.png" alt="BeLife" width={160} height={60} className="object-contain" priority />
       </Link>
 
       {/* Nav items */}
