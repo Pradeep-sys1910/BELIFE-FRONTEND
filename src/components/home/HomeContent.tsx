@@ -82,7 +82,9 @@ function PostCard({ blog }: { blog: Blog }) {
           <div>
             <p className="text-sm font-semibold text-gray-900 group-hover:text-forest-600 transition leading-tight">{blog.author.name}</p>
             <p className="text-xs text-gray-400">
-              <Link href={`/categories/${blog.category.slug}`} className="hover:text-forest-500 transition">{blog.category.name}</Link>
+              {blog.category ? (
+                <Link href={`/categories/${blog.category.slug}`} className="hover:text-forest-500 transition">{blog.category.name}</Link>
+              ) : null}
               {' · '}{formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}
             </p>
           </div>
