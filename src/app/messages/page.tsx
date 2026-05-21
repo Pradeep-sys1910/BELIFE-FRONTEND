@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Send, Lock, ArrowLeft, SquarePen, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -25,7 +25,7 @@ function Avatar({ user, size = 10 }: { user: OtherUser; size?: number }) {
   );
 }
 
-export default function MessagesPage() {
+function MessagesContent() {
   const { user, token } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -283,5 +283,13 @@ export default function MessagesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense>
+      <MessagesContent />
+    </Suspense>
   );
 }
