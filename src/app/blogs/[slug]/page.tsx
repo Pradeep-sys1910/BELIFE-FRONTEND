@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Heart, MessageCircle, ArrowLeft, Clock, Eye, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, ArrowLeft, Clock, Eye, Share2, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatDistanceToNow } from 'date-fns';
@@ -22,16 +22,17 @@ interface Blog {
   views: number;
   tags: string[];
   createdAt: string;
-  author: { name: string; avatar?: string; bio?: string };
+  author: { id: string; name: string; avatar?: string; bio?: string };
   category: { name: string; slug: string };
-  comments: { id: string; content: string; createdAt: string; author: { name: string; avatar?: string } }[];
+  comments: { id: string; content: string; createdAt: string; author: { id: string; name: string; avatar?: string } }[];
   _count: { likes: number };
 }
 
-function Avatar({ name, avatar, size = 9 }: { name: string; avatar?: string; size?: number }) {
-  if (avatar) return <img src={avatar} alt={name} className={`w-${size} h-${size} rounded-full object-cover`} />;
+function Avatar({ name, avatar, size = 36 }: { name: string; avatar?: string; size?: number }) {
+  const s = { width: size, height: size, borderRadius: '50%' };
+  if (avatar) return <img src={avatar} alt={name} style={{ ...s, objectFit: 'cover' }} />;
   return (
-    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+    <div style={s} className="bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
       {name[0].toUpperCase()}
     </div>
   );
@@ -104,6 +105,26 @@ export default function BlogDetailPage() {
     }
   };
 
+  const handleDeleteBlog = async () => {
+    if (!confirm('Delete this post? This cannot be undone.')) return;
+    try {
+      await api.delete(`/blogs/${blog!.id}`);
+      toast.success('Post deleted');
+      router.push('/');
+    } catch {
+      toast.error('Failed to delete post');
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await api.delete(`/blogs/${blog!.id}/comments/${commentId}`);
+      setBlog(prev => prev ? { ...prev, comments: prev.comments.filter(c => c.id !== commentId) } : prev);
+    } catch {
+      toast.error('Failed to delete comment');
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto px-4 pt-8 pb-24">
@@ -169,7 +190,7 @@ export default function BlogDetailPage() {
       {/* Author + meta */}
       <div className="flex items-start justify-between gap-4 mb-7 pb-7 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <Avatar name={blog.author?.name} avatar={blog.author?.avatar} size={10} />
+          <Avatar name={blog.author?.name} avatar={blog.author?.avatar} size={40} />
           <div>
             <p className="text-sm font-semibold text-gray-900">{blog.author?.name}</p>
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mt-0.5">
@@ -194,6 +215,12 @@ export default function BlogDetailPage() {
             className="p-2 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gray-700 transition">
             <Share2 className="w-5 h-5" strokeWidth={1.8} />
           </button>
+          {user?.id === blog.author?.id && (
+            <button onClick={handleDeleteBlog}
+              className="p-2 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-500 transition">
+              <Trash2 className="w-5 h-5" strokeWidth={1.8} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -256,7 +283,7 @@ export default function BlogDetailPage() {
         {user ? (
           <form onSubmit={submitComment} className="mb-7">
             <div className="flex items-start gap-3">
-              <Avatar name={user.name} avatar={user.avatar} size={8} />
+              <Avatar name={user.name} avatar={user.avatar} size={32} />
               <div className="flex-1">
                 <textarea
                   value={comment}
@@ -282,11 +309,18 @@ export default function BlogDetailPage() {
         <div className="space-y-4">
           {blog.comments?.map(c => (
             <div key={c.id} className="flex items-start gap-3">
-              <Avatar name={c.author.name} avatar={c.author.avatar} size={8} />
+              <Avatar name={c.author.name} avatar={c.author.avatar} size={32} />
               <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-semibold text-gray-900">{c.author.name}</span>
-                  <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
+                    {user?.id === c.author.id && (
+                      <button onClick={() => handleDeleteComment(c.id)} className="text-gray-300 hover:text-red-400 transition">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">{c.content}</p>
               </div>
