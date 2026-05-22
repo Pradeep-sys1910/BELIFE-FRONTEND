@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Compass, Tag, PenSquare, User, LogOut, MessageCircle, Settings } from 'lucide-react';
+import { Home, Compass, Tag, PenSquare, User, LogOut, MessageCircle, Settings, Users } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/blogs', icon: Compass, label: 'Explore' },
   { href: '/categories', icon: Tag, label: 'Topics' },
+  { href: '/forum', icon: Users, label: 'Forum' },
   { href: '/messages', icon: MessageCircle, label: 'Messages', auth: true },
   { href: '/blogs/new', icon: PenSquare, label: 'Write', auth: true },
   { href: '/dashboard', icon: User, label: 'Profile', auth: true },
