@@ -8,17 +8,18 @@ import {
   MessageCircle, Settings, Users, UsersRound,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const navItems = [
-  { href: '/',           icon: Home,        label: 'Home' },
-  { href: '/blogs',      icon: Compass,     label: 'Explore' },
-  { href: '/categories', icon: Tag,         label: 'Topics' },
-  { href: '/forum',      icon: Users,       label: 'Forum' },
-  { href: '/groups',     icon: UsersRound,  label: 'Groups' },
+  { href: '/',           icon: Home,          label: 'Home' },
+  { href: '/blogs',      icon: Compass,       label: 'Explore' },
+  { href: '/categories', icon: Tag,           label: 'Topics' },
+  { href: '/forum',      icon: Users,         label: 'Forum' },
+  { href: '/groups',     icon: UsersRound,    label: 'Groups' },
   { href: '/messages',   icon: MessageCircle, label: 'Messages', auth: true },
-  { href: '/blogs/new',  icon: PenSquare,   label: 'Write',    auth: true },
-  { href: '/dashboard',  icon: User,        label: 'Profile',  auth: true },
-  { href: '/settings',   icon: Settings,    label: 'Settings', auth: true },
+  { href: '/blogs/new',  icon: PenSquare,     label: 'Write',    auth: true },
+  { href: '/dashboard',  icon: User,          label: 'Profile',  auth: true },
+  { href: '/settings',   icon: Settings,      label: 'Settings', auth: true },
 ];
 
 export default function SideNav() {
@@ -29,10 +30,13 @@ export default function SideNav() {
   return (
     <nav
       className="hidden md:flex fixed left-0 top-0 h-screen w-[244px] flex-col py-5 px-3 z-50"
-      style={{ background: '#060D08', borderRight: '1px solid rgba(255,255,255,0.05)' }}
+      style={{
+        background:  'var(--bg-sidebar)',
+        borderRight: '1px solid var(--border)',
+      }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center px-2 pb-6 group">
+      <Link href="/" className="flex items-center px-2 pb-6">
         <Image src="/logo.png" alt="BeLife" width={148} height={54} className="object-contain" priority />
       </Link>
 
@@ -47,32 +51,33 @@ export default function SideNav() {
               href={href}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.97] group relative"
               style={{
-                background:  active ? 'rgba(34,197,94,0.10)' : undefined,
-                color:       active ? '#4ADE80' : '#5A7860',
+                background: active ? 'var(--eco-dim)'   : undefined,
+                color:      active ? 'var(--eco-bright)' : 'var(--text-muted)',
               }}
             >
-              {/* Hover layer */}
               <span
                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                style={{ background: active ? undefined : 'rgba(255,255,255,0.04)' }}
+                style={{ background: active ? undefined : 'var(--bg-hover)' }}
                 aria-hidden
               />
-
               <Icon
                 className="w-5 h-5 relative z-10 transition-colors duration-200"
-                style={{ color: active ? '#4ADE80' : undefined }}
+                style={{ color: active ? 'var(--eco-bright)' : undefined }}
                 strokeWidth={active ? 2.2 : 1.6}
               />
               <span
-                className="text-sm font-medium relative z-10 transition-colors duration-200 group-hover:text-[#DFF0E3]"
-                style={{ color: active ? '#4ADE80' : undefined }}
+                className="text-sm font-medium relative z-10 transition-colors duration-200 group-hover:text-[var(--text)]"
+                style={{ color: active ? 'var(--eco-bright)' : undefined }}
               >
                 {label}
               </span>
               {active && (
                 <span
                   className="ml-auto w-1.5 h-1.5 rounded-full relative z-10"
-                  style={{ background: '#4ADE80', boxShadow: '0 0 6px rgba(74,222,128,0.6)' }}
+                  style={{
+                    background: 'var(--eco-bright)',
+                    boxShadow:  '0 0 6px var(--eco)',
+                  }}
                 />
               )}
             </Link>
@@ -80,10 +85,15 @@ export default function SideNav() {
         })}
       </div>
 
+      {/* Theme toggle */}
+      <div className="mt-3 mb-2 px-1">
+        <ThemeToggle />
+      </div>
+
       {/* User section */}
       <div
-        className="flex flex-col gap-1 mt-2 pt-4"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+        className="flex flex-col gap-1 pt-3"
+        style={{ borderTop: '1px solid var(--border)' }}
       >
         {user ? (
           <>
@@ -92,7 +102,7 @@ export default function SideNav() {
                 <img
                   src={user.avatar} alt={user.name}
                   className="w-8 h-8 rounded-full object-cover shrink-0"
-                  style={{ border: '1px solid rgba(74,222,128,0.3)' }}
+                  style={{ border: '1.5px solid var(--eco-dim)' }}
                 />
               ) : (
                 <div
@@ -103,10 +113,10 @@ export default function SideNav() {
                 </div>
               )}
               <div className="flex flex-col min-w-0">
-                <span className="text-sm font-semibold truncate" style={{ color: '#DFF0E3' }}>
+                <span className="text-sm font-semibold truncate" style={{ color: 'var(--text)' }}>
                   {user.name}
                 </span>
-                <span className="text-xs truncate" style={{ color: '#3A5640' }}>
+                <span className="text-xs truncate" style={{ color: 'var(--text-faint)' }}>
                   {user.email}
                 </span>
               </div>
@@ -114,21 +124,16 @@ export default function SideNav() {
 
             <button
               onClick={() => { logout(); router.push('/'); }}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm w-full group"
-              style={{ color: '#3A5640' }}
+              className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm w-full group"
+              style={{ color: 'var(--text-faint)' }}
             >
               <span
                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ background: 'rgba(239,68,68,0.07)' }}
                 aria-hidden
               />
-              <LogOut
-                className="w-4 h-4 relative z-10 transition-colors duration-200 group-hover:text-red-400"
-                strokeWidth={1.5}
-              />
-              <span className="relative z-10 transition-colors duration-200 group-hover:text-red-400">
-                Log out
-              </span>
+              <LogOut className="w-4 h-4 relative z-10 group-hover:text-red-400 transition-colors" strokeWidth={1.5} />
+              <span className="relative z-10 group-hover:text-red-400 transition-colors">Log out</span>
             </button>
           </>
         ) : (
@@ -136,17 +141,14 @@ export default function SideNav() {
             <Link
               href="/register"
               className="w-full text-center py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95"
-              style={{ background: '#22C55E', color: '#050C07' }}
+              style={{ background: 'var(--eco)', color: '#050C07' }}
             >
               Join BeLife
             </Link>
             <Link
               href="/login"
               className="w-full text-center py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-              style={{
-                color:  '#4ADE80',
-                border: '1px solid rgba(74,222,128,0.18)',
-              }}
+              style={{ color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
             >
               Sign In
             </Link>

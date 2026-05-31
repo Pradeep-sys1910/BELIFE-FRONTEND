@@ -26,13 +26,13 @@ const inputCls = `
   w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none
   placeholder:text-[#2E4A35] text-[#DFF0E3]
 `;
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border:     '1px solid rgba(255,255,255,0.08)',
+const inputStyle: React.CSSProperties = {
+  background: 'var(--input-bg)',
+  border:     '1px solid var(--input-border)',
 };
-const inputFocusStyle = {
+const inputFocusStyle: React.CSSProperties = {
   borderColor: 'rgba(74,222,128,0.4)',
-  background:  'rgba(255,255,255,0.06)',
+  background:  'var(--input-bg)',
   boxShadow:   '0 0 0 3px rgba(34,197,94,0.08)',
 };
 
@@ -102,7 +102,7 @@ export default function LoginPage() {
       {/* ── Left brand panel ────────────────────────────────────── */}
       <div
         className="hidden lg:flex w-[440px] shrink-0 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: '#060D08', borderRight: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ background: 'var(--bg-sidebar)', borderRight: '1px solid var(--border)' }}
       >
         {/* Ambient glow */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{

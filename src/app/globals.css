@@ -3,19 +3,48 @@
 @tailwind utilities;
 
 /* ── Design tokens ───────────────────────────────────────────────────────── */
-:root {
-  --bg:          #070E09;
-  --bg-card:     #0C1610;
-  --bg-elevated: #101E14;
-  --bg-hover:    #162618;
-  --border:      rgba(255,255,255,0.06);
-  --border-eco:  rgba(74,222,128,0.15);
-  --text:        #DFF0E3;
-  --text-muted:  #6E9674;
-  --text-faint:  #3A5640;
-  --eco:         #22C55E;
-  --eco-bright:  #4ADE80;
-  --eco-dim:     rgba(34,197,94,0.10);
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --bg:            #070E09;
+  --bg-card:       #0C1610;
+  --bg-elevated:   #101E14;
+  --bg-hover:      #162618;
+  --bg-sidebar:    #060D08;
+  --border:        rgba(255,255,255,0.06);
+  --border-eco:    rgba(74,222,128,0.15);
+  --text:          #DFF0E3;
+  --text-muted:    #6E9674;
+  --text-faint:    #3A5640;
+  --eco:           #22C55E;
+  --eco-bright:    #4ADE80;
+  --eco-dim:       rgba(34,197,94,0.10);
+  --skeleton-a:    #0C1610;
+  --skeleton-b:    #142018;
+  --input-bg:      rgba(255,255,255,0.04);
+  --input-border:  rgba(255,255,255,0.08);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg:            #F4F9F5;
+  --bg-card:       #FFFFFF;
+  --bg-elevated:   #EEF6F0;
+  --bg-hover:      #E3F0E7;
+  --bg-sidebar:    #FFFFFF;
+  --border:        rgba(0,0,0,0.07);
+  --border-eco:    rgba(22,163,74,0.22);
+  --text:          #0D1A11;
+  --text-muted:    #3A6040;
+  --text-faint:    #7DA882;
+  --eco:           #16A34A;
+  --eco-bright:    #15803D;
+  --eco-dim:       rgba(22,163,74,0.09);
+  --skeleton-a:    #E8F2EB;
+  --skeleton-b:    #D6EAD9;
+  --input-bg:      rgba(0,0,0,0.03);
+  --input-border:  rgba(0,0,0,0.10);
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
@@ -93,15 +122,15 @@
   /* ── Input ── */
   .input {
     @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-200;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
     color: var(--text);
   }
   .input::placeholder { color: var(--text-faint); }
   .input:focus {
     outline: none;
     border-color: rgba(74,222,128,0.4);
-    background: rgba(255,255,255,0.06);
+    background: var(--input-bg);
     box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
   }
 
@@ -119,10 +148,10 @@
     background: linear-gradient(135deg, #22C55E, #0F4C25);
   }
 
-  /* ── Skeleton shimmer (dark version) ── */
+  /* ── Skeleton shimmer (theme-aware) ── */
   .skeleton {
     @apply rounded-lg;
-    background: linear-gradient(90deg, #0C1610 0px, #142018 40px, #0C1610 80px);
+    background: linear-gradient(90deg, var(--skeleton-a) 0px, var(--skeleton-b) 40px, var(--skeleton-a) 80px);
     background-size: 400px 100%;
     animation: shimmer 1.6s ease-in-out infinite;
   }

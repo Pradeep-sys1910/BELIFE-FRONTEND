@@ -8,14 +8,14 @@ import toast from 'react-hot-toast';
 import api from '@/lib/api';
 
 const inputCls =
-  'w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200 text-[#DFF0E3] placeholder:text-[#2E4A35]';
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border:     '1px solid rgba(255,255,255,0.08)',
+  'w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200 text-[var(--text)] placeholder:text-[var(--text-faint)]';
+const inputStyle: React.CSSProperties = {
+  background: 'var(--input-bg)',
+  border:     '1px solid var(--input-border)',
 };
-const focusStyle = {
+const focusStyle: React.CSSProperties = {
   borderColor: 'rgba(74,222,128,0.4)',
-  background:  'rgba(255,255,255,0.06)',
+  background:  'var(--input-bg)',
   boxShadow:   '0 0 0 3px rgba(34,197,94,0.08)',
 };
 
@@ -100,7 +100,7 @@ export default function RegisterPage() {
       {/* ── Left brand panel ────────────────────────────────────── */}
       <div
         className="hidden lg:flex w-[440px] shrink-0 flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: '#060D08', borderRight: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ background: 'var(--bg-sidebar)', borderRight: '1px solid var(--border)' }}
       >
         <div className="absolute inset-0 pointer-events-none" style={{
           background: 'radial-gradient(ellipse 70% 60% at 20% 30%, rgba(34,197,94,0.07) 0%, transparent 70%)',

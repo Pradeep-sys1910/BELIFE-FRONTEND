@@ -27,10 +27,10 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex items-center justify-around"
       style={{
-        height: 'calc(56px + env(safe-area-inset-bottom))',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        background: 'rgba(6,13,8,0.97)',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
+        height:       'calc(56px + env(safe-area-inset-bottom))',
+        paddingBottom:'env(safe-area-inset-bottom)',
+        background:   'var(--bg-sidebar)',
+        borderTop:    '1px solid var(--border)',
         backdropFilter: 'blur(16px)',
       }}
     >
@@ -41,14 +41,14 @@ export default function BottomNav() {
             key={href}
             href={href}
             className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-all duration-200"
-            style={{ color: active ? '#4ADE80' : '#3A5640' }}
+            style={{ color: active ? 'var(--eco-bright)' : 'var(--text-faint)' }}
           >
             {href === '/blogs/new' ? (
               <span
-                className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-eco-sm"
+                className="w-10 h-10 rounded-2xl flex items-center justify-center"
                 style={{
-                  background: active ? '#16A34A' : '#22C55E',
-                  boxShadow:  '0 0 14px rgba(34,197,94,0.3)',
+                  background: 'var(--eco)',
+                  boxShadow:  '0 0 14px var(--eco-dim)',
                 }}
               >
                 <Icon className="w-5 h-5" style={{ color: '#050C07' }} strokeWidth={2.2} />
