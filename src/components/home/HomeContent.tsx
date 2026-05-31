@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal, Users, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -28,12 +28,16 @@ interface Category {
   icon: string;
 }
 
-function Avatar({ name, avatar, size = 8 }: { name: string; avatar?: string; size?: number }) {
+function Avatar({ name, avatar, size = 36 }: { name: string; avatar?: string; size?: number }) {
+  const s = { width: size, height: size, borderRadius: '50%' as const, flexShrink: 0 as const };
   if (avatar) {
-    return <img src={avatar} alt={name} className={`w-${size} h-${size} rounded-full object-cover`} />;
+    return <img src={avatar} alt={name} style={{ ...s, objectFit: 'cover' as const }} />;
   }
   return (
-    <div className={`w-${size} h-${size} rounded-full bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+    <div
+      style={s}
+      className="bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm"
+    >
       {name[0].toUpperCase()}
     </div>
   );
@@ -50,7 +54,6 @@ function PostCard({ blog }: { blog: Blog }) {
   const handleLike = async () => {
     if (!user) { router.push('/login'); return; }
     if (liking) return;
-    // Optimistic update
     const wasLiked = liked;
     setLiked(!wasLiked);
     setLikes(n => wasLiked ? n - 1 : n + 1);
@@ -60,7 +63,6 @@ function PostCard({ blog }: { blog: Blog }) {
       setLiked(data.liked);
       setLikes(data.count);
     } catch {
-      // Revert on error
       setLiked(wasLiked);
       setLikes(n => wasLiked ? n + 1 : n - 1);
     } finally {
@@ -78,7 +80,7 @@ function PostCard({ blog }: { blog: Blog }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <Link href={blog.author.username ? `/profile/${blog.author.username}` : '#'} className="flex items-center gap-2.5 group">
-          <Avatar name={blog.author.name} avatar={blog.author.avatar} size={9} />
+          <Avatar name={blog.author.name} avatar={blog.author.avatar} size={36} />
           <div>
             <p className="text-sm font-semibold text-gray-900 group-hover:text-forest-600 transition leading-tight">{blog.author.name}</p>
             <p className="text-xs text-gray-400">
@@ -179,11 +181,17 @@ function SkeletonCard() {
   );
 }
 
+type FeedTab = 'forYou' | 'following';
+
 export default function HomeContent() {
   const { user } = useAuthStore();
+  const [tab, setTab] = useState<FeedTab>('forYou');
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [followingBlogs, setFollowingBlogs] = useState<Blog[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [followingLoading, setFollowingLoading] = useState(false);
+  const [followingLoaded, setFollowingLoaded] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -194,6 +202,20 @@ export default function HomeContent() {
       setCategories(catsRes.data.slice(0, 12));
     }).finally(() => setLoading(false));
   }, []);
+
+  // Lazy-load following feed when tab is clicked
+  const handleFollowingTab = () => {
+    setTab('following');
+    if (followingLoaded || !user) return;
+    setFollowingLoading(true);
+    api.get('/blogs/following', { params: { limit: 10 } })
+      .then(r => setFollowingBlogs(r.data.blogs || []))
+      .catch(() => {})
+      .finally(() => { setFollowingLoading(false); setFollowingLoaded(true); });
+  };
+
+  const activeFeed = tab === 'forYou' ? blogs : followingBlogs;
+  const activeLoading = tab === 'forYou' ? loading : followingLoading;
 
   return (
     <div className="max-w-[630px] mx-auto px-4 pt-6 pb-12">
@@ -216,8 +238,35 @@ export default function HomeContent() {
               </Link>
             ))}
           </div>
-          {/* Right fade to indicate more items */}
           <div className="absolute top-0 right-0 h-[calc(100%-12px)] w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        </div>
+      )}
+
+      {/* Feed tabs — only shown to logged-in users */}
+      {user && (
+        <div className="flex gap-1 mb-4 p-1 bg-gray-100 rounded-xl">
+          <button
+            onClick={() => setTab('forYou')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold rounded-lg transition ${
+              tab === 'forYou'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            For You
+          </button>
+          <button
+            onClick={handleFollowingTab}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold rounded-lg transition ${
+              tab === 'following'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            Following
+          </button>
         </div>
       )}
 
@@ -225,9 +274,18 @@ export default function HomeContent() {
       <div className="border-t border-gray-100 mb-6" />
 
       {/* Feed */}
-      {loading ? (
+      {activeLoading ? (
         <div>{[1, 2, 3].map(i => <SkeletonCard key={i} />)}</div>
-      ) : blogs.length === 0 ? (
+      ) : tab === 'following' && activeFeed.length === 0 ? (
+        <div className="text-center py-24">
+          <div className="text-5xl mb-4">🌱</div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Your following feed is empty</h3>
+          <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
+            Follow other eco-writers to see their stories here. Discover people on the{' '}
+            <Link href="/blogs" className="text-forest-600 hover:underline">Explore page</Link>.
+          </p>
+        </div>
+      ) : activeFeed.length === 0 ? (
         <div className="text-center py-24">
           <div className="text-5xl mb-4">🌱</div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No stories yet</h3>
@@ -242,7 +300,7 @@ export default function HomeContent() {
         </div>
       ) : (
         <>
-          {blogs.map((blog, i) => (
+          {activeFeed.map((blog, i) => (
             <div key={blog.id} className="animate-slide-up" style={{ animationDelay: `${i * 0.06}s` }}>
               <PostCard blog={blog} />
             </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, UserPlus, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -15,6 +15,7 @@ interface PublicUser {
   bio?: string;
   avatar?: string;
   createdAt: string;
+  _count: { followers: number; following: number };
 }
 
 interface Blog {
@@ -36,16 +37,47 @@ export default function PublicProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
     api.get(`/users/${username}/profile`)
       .then(r => {
         setUser(r.data.user);
         setBlogs(r.data.blogs);
+        setFollowerCount(r.data.user._count.followers);
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [username]);
+
+  // Check if current user follows this profile
+  useEffect(() => {
+    if (!currentUser || !user || currentUser.id === user.id) return;
+    api.get(`/users/${user.id}/follow-status`)
+      .then(r => setFollowing(r.data.following))
+      .catch(() => {});
+  }, [currentUser, user]);
+
+  const handleFollow = async () => {
+    if (!currentUser) { router.push('/login'); return; }
+    if (!user || followLoading) return;
+    setFollowLoading(true);
+    const wasFollowing = following;
+    setFollowing(!wasFollowing);
+    setFollowerCount(n => wasFollowing ? n - 1 : n + 1);
+    try {
+      const { data } = await api.post(`/users/${user.id}/follow`);
+      setFollowing(data.following);
+      setFollowerCount(data.followerCount);
+    } catch {
+      setFollowing(wasFollowing);
+      setFollowerCount(n => wasFollowing ? n + 1 : n - 1);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   if (loading) return (
     <div className="max-w-[630px] mx-auto px-4 pt-12 pb-24 animate-pulse">
@@ -68,6 +100,8 @@ export default function PublicProfilePage() {
 
   if (!user) return null;
 
+  const isOwnProfile = currentUser?.id === user.id;
+
   return (
     <div className="max-w-[630px] mx-auto px-4 pt-8 pb-24">
 
@@ -87,25 +121,62 @@ export default function PublicProfilePage() {
           {user.username && (
             <p className="text-sm text-gray-400 mb-3">@{user.username}</p>
           )}
+
+          {/* Stats row */}
           <ul className="flex gap-6 justify-center md:justify-start mb-3">
-            <li className="text-sm">
+            <li className="text-sm text-center">
               <span className="font-semibold text-gray-900">{blogs.length}</span>
               {' '}<span className="text-gray-500">posts</span>
             </li>
+            <li className="text-sm text-center cursor-pointer hover:opacity-70 transition">
+              <span className="font-semibold text-gray-900">{followerCount}</span>
+              {' '}<span className="text-gray-500">followers</span>
+            </li>
+            <li className="text-sm text-center cursor-pointer hover:opacity-70 transition">
+              <span className="font-semibold text-gray-900">{user._count.following}</span>
+              {' '}<span className="text-gray-500">following</span>
+            </li>
           </ul>
+
           {user.bio && (
             <p className="text-sm text-gray-700 whitespace-pre-line">{user.bio}</p>
           )}
           <p className="text-xs text-gray-400 mt-1">
             Member since {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
           </p>
-          {currentUser && currentUser.id !== user.id && (
-            <button
-              onClick={() => router.push(`/messages?with=${user.id}`)}
-              className="mt-3 flex items-center gap-2 text-sm font-semibold text-forest-600 border border-forest-200 px-4 py-2 rounded-full hover:bg-forest-50 transition">
-              <MessageCircle className="w-4 h-4" />
-              Message
-            </button>
+
+          {/* Action buttons — only shown to other users */}
+          {currentUser && !isOwnProfile && (
+            <div className="mt-3 flex items-center gap-2 justify-center md:justify-start">
+              <button
+                onClick={handleFollow}
+                disabled={followLoading}
+                className={`flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full transition ${
+                  following
+                    ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 border border-gray-200'
+                    : 'bg-forest-600 text-white hover:bg-forest-700 border border-forest-600'
+                }`}
+              >
+                {following ? (
+                  <><UserCheck className="w-4 h-4" /> Following</>
+                ) : (
+                  <><UserPlus className="w-4 h-4" /> Follow</>
+                )}
+              </button>
+              <button
+                onClick={() => router.push(`/messages?with=${user.id}`)}
+                className="flex items-center gap-2 text-sm font-semibold text-forest-600 border border-forest-200 px-4 py-2 rounded-full hover:bg-forest-50 transition">
+                <MessageCircle className="w-4 h-4" />
+                Message
+              </button>
+            </div>
+          )}
+
+          {isOwnProfile && (
+            <Link href="/settings"
+              className="mt-3 inline-block text-sm font-semibold text-gray-600 border border-gray-200 px-5 py-2 rounded-full hover:bg-gray-50 transition">
+              Edit Profile
+            </Link>
           )}
         </div>
       </header>
