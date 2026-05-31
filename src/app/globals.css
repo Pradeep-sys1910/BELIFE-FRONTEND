@@ -2,107 +2,142 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+:root {
+  --bg:          #070E09;
+  --bg-card:     #0C1610;
+  --bg-elevated: #101E14;
+  --bg-hover:    #162618;
+  --border:      rgba(255,255,255,0.06);
+  --border-eco:  rgba(74,222,128,0.15);
+  --text:        #DFF0E3;
+  --text-muted:  #6E9674;
+  --text-faint:  #3A5640;
+  --eco:         #22C55E;
+  --eco-bright:  #4ADE80;
+  --eco-dim:     rgba(34,197,94,0.10);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    background-color: #FAFAF9;
-    color: #0F1A14;
+    background-color: var(--bg);
+    color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
   * { box-sizing: border-box; }
 
   ::selection {
-    background-color: #BDD5C6;
-    color: #0F1A14;
+    background-color: rgba(74, 222, 128, 0.22);
+    color: #DFF0E3;
   }
+
+  h1, h2, h3, h4 { color: #E8F5EC; }
 }
 
+/* ── Components ──────────────────────────────────────────────────────────── */
 @layer components {
 
   /* ── Buttons ── */
   .btn-primary {
-    @apply bg-forest-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm
-           hover:bg-forest-700 active:scale-95 transition-all duration-200
-           inline-flex items-center gap-2 cursor-pointer shadow-sm
-           hover:shadow-md;
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
+           font-semibold text-sm cursor-pointer
+           active:scale-95 transition-all duration-200;
+    background: var(--eco);
+    color: #050C07;
   }
+  .btn-primary:hover { background: #16A34A; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-secondary {
-    @apply bg-forest-50 text-forest-700 border border-forest-200 px-5 py-2.5 rounded-xl font-semibold text-sm
-           hover:bg-forest-100 active:scale-95 transition-all duration-200
-           inline-flex items-center gap-2 cursor-pointer;
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl
+           font-semibold text-sm cursor-pointer
+           active:scale-95 transition-all duration-200;
+    background: rgba(34,197,94,0.08);
+    color: var(--eco-bright);
+    border: 1px solid rgba(74,222,128,0.2);
   }
+  .btn-secondary:hover { background: rgba(34,197,94,0.14); }
 
   .btn-ghost {
-    @apply text-forest-600 px-4 py-2 rounded-xl font-medium text-sm
-           hover:bg-forest-50 transition-all duration-200 inline-flex items-center gap-2;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl
+           font-medium text-sm cursor-pointer transition-all duration-200;
+    color: var(--eco-bright);
   }
+  .btn-ghost:hover { background: var(--eco-dim); }
 
   /* ── Cards ── */
   .card {
-    @apply bg-white border border-gray-100 rounded-2xl shadow-card
-           hover:shadow-card-hover transition-all duration-300;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl transition-all duration-300;
+  }
+  .card:hover {
+    border-color: var(--border-eco);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.06);
   }
 
   .card-blog {
-    @apply bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-card
-           hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer;
   }
-
-  /* ── Story ring ── */
-  .story-ring {
-    @apply rounded-full p-[2.5px] bg-gradient-to-tr from-forest-400 to-forest-700;
+  .card-blog:hover {
+    border-color: var(--border-eco);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.06);
   }
 
   /* ── Input ── */
   .input {
-    @apply w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm
-           focus:outline-none focus:ring-2 focus:ring-forest-500/40 focus:border-forest-400
-           placeholder:text-gray-400 transition-all duration-200;
+    @apply w-full px-4 py-3 rounded-xl text-sm transition-all duration-200;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .input::placeholder { color: var(--text-faint); }
+  .input:focus {
+    outline: none;
+    border-color: rgba(74,222,128,0.4);
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
   }
 
-  /* ── Nav ── */
-  .top-nav {
-    @apply bg-white/95 border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm;
-  }
-
-  .bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-white/95 border-t border-gray-100 z-50
-           flex items-center justify-around py-2 md:hidden shadow-nav backdrop-blur-sm;
-  }
-
-  .bottom-nav-item {
-    @apply flex flex-col items-center gap-0.5 px-4 py-1 text-gray-400
-           hover:text-forest-600 transition-colors cursor-pointer;
-  }
-
-  .bottom-nav-item.active {
-    @apply text-forest-600;
-  }
-
-  .heading-serif {
-    @apply font-serif text-gray-900 leading-tight;
-  }
-
-  .like-btn {
-    @apply transition-transform active:scale-125 duration-150;
-  }
-
+  /* ── Badge ── */
   .badge {
     @apply text-xs font-medium px-2.5 py-0.5 rounded-full;
+    background: rgba(34,197,94,0.1);
+    color: var(--eco-bright);
+    border: 1px solid rgba(74,222,128,0.15);
   }
 
-  /* ── Skeleton shimmer ── */
+  /* ── Story ring ── */
+  .story-ring {
+    @apply rounded-full p-[2.5px];
+    background: linear-gradient(135deg, #22C55E, #0F4C25);
+  }
+
+  /* ── Skeleton shimmer (dark version) ── */
   .skeleton {
     @apply rounded-lg;
-    background: linear-gradient(
-      90deg,
-      #F0F0EE 0px,
-      #E8E8E4 40px,
-      #F0F0EE 80px
-    );
+    background: linear-gradient(90deg, #0C1610 0px, #142018 40px, #0C1610 80px);
     background-size: 400px 100%;
     animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  /* ── Nav bottom ── */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around py-2 md:hidden;
+    background: rgba(7,14,9,0.95);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border-top: 1px solid var(--border);
   }
 
   /* ── Stagger delays ── */
@@ -112,19 +147,59 @@
   .stagger-4 { animation-delay: 0.20s; }
   .stagger-5 { animation-delay: 0.25s; }
   .stagger-6 { animation-delay: 0.30s; }
+
+  /* ── Prose overrides for blog content ── */
+  .prose-dark {
+    color: #C8DFD0;
+  }
+  .prose-dark h1, .prose-dark h2, .prose-dark h3, .prose-dark h4 {
+    color: #E8F5EC;
+  }
+  .prose-dark a {
+    color: var(--eco-bright);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-dark code {
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 0.875em;
+    color: #86EFAC;
+  }
+  .prose-dark blockquote {
+    border-left: 3px solid rgba(74,222,128,0.4);
+    padding-left: 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .prose-dark pre {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .prose-dark hr {
+    border-color: var(--border);
+  }
+  .prose-dark strong { color: #E8F5EC; }
 }
 
-/* ── Scrollbar ── */
+/* ── Animations ──────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #C8D8CF; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #3D7A5A; }
+::-webkit-scrollbar-thumb { background: #1F3023; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2F4E2E; }
 
-/* ── Hide scrollbar for stories ── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Line clamp ── */
+/* ── Line clamp ──────────────────────────────────────────────────────────── */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
