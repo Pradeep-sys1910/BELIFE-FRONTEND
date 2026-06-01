@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     images: ['/logo.png'],
   },
   alternates: { canonical: 'https://www.belife.site' },
+  icons: {
+    icon: [
+      { url: '/favicon.jpg', type: 'image/jpeg' },
+    ],
+    apple: '/favicon.jpg',
+    shortcut: '/favicon.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
