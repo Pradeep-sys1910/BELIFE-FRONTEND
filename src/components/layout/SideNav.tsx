@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Compass, Search, Tag, PenSquare, User, LogOut,
   MessageCircle, Settings, Users, UsersRound,
-  Bell, Lightbulb, Megaphone, Trophy,
+  Bell, Lightbulb, Megaphone, Trophy, Bookmark,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -22,6 +22,7 @@ const navItems = [
   { href: '/groups',      icon: UsersRound,    label: 'Groups' },
   { href: '/campaigns',   icon: Megaphone,     label: 'Campaigns' },
   { href: '/challenges',  icon: Trophy,        label: 'Challenges' },
+  { href: '/bookmarks',   icon: Bookmark,      label: 'Saved',     auth: true },
   { href: '/messages',    icon: MessageCircle, label: 'Messages',  auth: true },
   { href: '/blogs/new',   icon: PenSquare,     label: 'Write',     auth: true },
   { href: '/dashboard',   icon: User,          label: 'Profile',   auth: true },

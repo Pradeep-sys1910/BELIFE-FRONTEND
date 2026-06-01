@@ -4,6 +4,7 @@ import ToasterProvider from '@/components/ToasterProvider';
 import ThemeProvider from '@/components/ThemeProvider';
 import SideNav from '@/components/layout/SideNav';
 import BottomNav from '@/components/layout/BottomNav';
+import MobileHeader from '@/components/layout/MobileHeader';
 import './globals.css';
 
 const inter    = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -35,12 +36,11 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: 'https://www.belife.site' },
   icons: {
-    icon: [
-      { url: '/favicon.jpg', type: 'image/jpeg' },
-    ],
+    icon: [{ url: '/favicon.jpg', type: 'image/jpeg' }],
     apple: '/favicon.jpg',
     shortcut: '/favicon.jpg',
   },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -56,9 +56,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
         <ThemeProvider>
+          <MobileHeader />
           <div className="flex min-h-screen">
             <SideNav />
-            <main className="flex-1 md:ml-[244px] pb-20 md:pb-0 min-w-0">
+            <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-20 md:pb-0 min-w-0">
               {children}
             </main>
           </div>

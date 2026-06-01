@@ -181,7 +181,13 @@ function PostCard({ blog, index }: { blog: Blog; index: number }) {
         <div className="flex items-center gap-2">
           <span className="text-xs" style={{ color: 'var(--text-faint)' }}>{blog.readTime} min</span>
           <button
-            onClick={() => { if (!user) { router.push('/login'); return; } setSaved(s => !s); }}
+            onClick={async () => {
+              if (!user) { router.push('/login'); return; }
+              const next = !saved;
+              setSaved(next);
+              try { await api.post(`/blogs/${blog.id}/bookmark`); }
+              catch { setSaved(!next); }
+            }}
             className="flex items-center px-2.5 py-1.5 rounded-full transition-all duration-200 group"
             style={{ color: saved ? '#4ADE80' : 'var(--text-faint)' }}
           >

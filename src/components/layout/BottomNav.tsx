@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Compass, PenSquare, Lightbulb, User } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
 
 const items = [
   { href: '/',          icon: Home,      label: 'Home' },
@@ -18,6 +20,16 @@ const HIDE_ON = ['/login', '/register', '/verify-email', '/forgot-password', '/r
 export default function BottomNav() {
   const pathname = usePathname();
   const { user }  = useAuthStore();
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    api.get('/notifications/unread-count').then(r => setUnread(r.data.count || 0)).catch(() => {});
+    const t = setInterval(() => {
+      api.get('/notifications/unread-count').then(r => setUnread(r.data.count || 0)).catch(() => {});
+    }, 30_000);
+    return () => clearInterval(t);
+  }, [user]);
 
   if (HIDE_ON.some(p => pathname.startsWith(p))) return null;
 
@@ -46,16 +58,19 @@ export default function BottomNav() {
             {href === '/blogs/new' ? (
               <span
                 className="w-10 h-10 rounded-2xl flex items-center justify-center"
-                style={{
-                  background: 'var(--eco)',
-                  boxShadow:  '0 0 14px var(--eco-dim)',
-                }}
+                style={{ background: 'var(--eco)', boxShadow: '0 0 14px var(--eco-dim)' }}
               >
                 <Icon className="w-5 h-5" style={{ color: '#050C07' }} strokeWidth={2.2} />
               </span>
             ) : (
               <>
-                <Icon className="w-5 h-5" strokeWidth={active ? 2.4 : 1.5} />
+                <span className="relative">
+                  <Icon className="w-5 h-5" strokeWidth={active ? 2.4 : 1.5} />
+                  {href === '/dashboard' && unread > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                      style={{ background: 'var(--eco)', boxShadow: '0 0 4px var(--eco)' }} />
+                  )}
+                </span>
                 <span className="text-[10px] font-medium">{label}</span>
               </>
             )}
