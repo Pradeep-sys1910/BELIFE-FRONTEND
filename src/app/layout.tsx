@@ -5,6 +5,7 @@ import ThemeProvider from '@/components/ThemeProvider';
 import SideNav from '@/components/layout/SideNav';
 import BottomNav from '@/components/layout/BottomNav';
 import MobileHeader from '@/components/layout/MobileHeader';
+import OnboardingGuard from '@/components/OnboardingGuard';
 import './globals.css';
 
 const inter    = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -56,15 +57,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans antialiased" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
         <ThemeProvider>
-          <MobileHeader />
-          <div className="flex min-h-screen">
-            <SideNav />
-            <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-20 md:pb-0 min-w-0">
-              {children}
-            </main>
-          </div>
-          <BottomNav />
-          <ToasterProvider />
+          <OnboardingGuard>
+            <MobileHeader />
+            <div className="flex min-h-screen">
+              <SideNav />
+              <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-20 md:pb-0 min-w-0">
+                {children}
+              </main>
+            </div>
+            <BottomNav />
+            <ToasterProvider />
+          </OnboardingGuard>
         </ThemeProvider>
       </body>
     </html>

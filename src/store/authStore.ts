@@ -7,16 +7,19 @@ import Cookies from 'js-cookie';
 interface User {
   id: string;
   name: string;
+  username?: string;
   email: string;
   avatar?: string;
   bio?: string;
   verified: boolean;
+  onboarded: boolean;
 }
 
 interface AuthState {
   user: User | null;
   token: string | null;
   setUser: (user: User, token: string) => void;
+  updateUser: (patch: Partial<User>) => void;
   logout: () => void;
 }
 
@@ -29,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
         Cookies.set('belife_token', token, { expires: 7 });
         set({ user, token });
       },
+      updateUser: (patch) => set(s => ({ user: s.user ? { ...s.user, ...patch } : null })),
       logout: () => {
         Cookies.remove('belife_token');
         set({ user: null, token: null });
