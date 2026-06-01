@@ -53,7 +53,6 @@ export default function PublicProfilePage() {
       .finally(() => setLoading(false));
   }, [username]);
 
-  // Check if current user follows this profile
   useEffect(() => {
     if (!currentUser || !user || currentUser.id === user.id) return;
     api.get(`/users/${user.id}/follow-status`)
@@ -83,9 +82,9 @@ export default function PublicProfilePage() {
   if (loading) return (
     <div className="max-w-[630px] mx-auto px-4 pt-12 pb-24 animate-pulse">
       <div className="flex flex-col items-center gap-4 mb-10">
-        <div className="w-24 h-24 rounded-full bg-gray-200" />
-        <div className="h-5 bg-gray-200 rounded w-40" />
-        <div className="h-3 bg-gray-200 rounded w-56" />
+        <div className="w-24 h-24 rounded-full" style={{ background: 'var(--bg-elevated)' }} />
+        <div className="h-5 rounded w-40" style={{ background: 'var(--bg-elevated)' }} />
+        <div className="h-3 rounded w-56" style={{ background: 'var(--bg-elevated)' }} />
       </div>
     </div>
   );
@@ -93,9 +92,9 @@ export default function PublicProfilePage() {
   if (notFound) return (
     <div className="max-w-[630px] mx-auto px-4 pt-24 pb-24 text-center">
       <div className="text-5xl mb-4">🌿</div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-2">User not found</h2>
-      <p className="text-sm text-gray-500 mb-6">This profile doesn't exist or may have been deleted.</p>
-      <Link href="/" className="text-forest-600 text-sm hover:underline">← Back to Home</Link>
+      <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>User not found</h2>
+      <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>This profile doesn't exist or may have been deleted.</p>
+      <Link href="/" className="text-sm hover:underline" style={{ color: 'var(--eco-bright)' }}>← Back to Home</Link>
     </div>
   );
 
@@ -108,34 +107,36 @@ export default function PublicProfilePage() {
 
       {/* Profile header */}
       <header className="flex flex-col items-center md:flex-row md:items-start gap-6 mb-10">
-        <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-[3px] bg-gradient-to-tr from-forest-400 to-forest-700 shrink-0">
+        <div className="w-24 h-24 md:w-28 md:h-28 rounded-full p-[3px] shrink-0"
+          style={{ background: 'linear-gradient(135deg,#22C55E,#0F4C25)' }}>
           {user.avatar
             ? <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover border-2 border-white" />
-            : <div className="w-full h-full rounded-full bg-forest-600 flex items-center justify-center text-white text-3xl font-bold border-2 border-white">
+            : <div className="w-full h-full rounded-full flex items-center justify-center text-white text-3xl font-bold border-2 border-white"
+                style={{ background: '#0F4C25' }}>
                 {user.name[0].toUpperCase()}
               </div>
           }
         </div>
 
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-xl font-semibold text-gray-900 mb-0.5">{user.name}</h1>
+          <h1 className="text-xl font-semibold mb-0.5" style={{ color: 'var(--text)' }}>{user.name}</h1>
           {user.username && (
-            <p className="text-sm text-gray-400 mb-3">@{user.username}</p>
+            <p className="text-sm mb-3" style={{ color: 'var(--text-faint)' }}>@{user.username}</p>
           )}
 
           {/* Stats row */}
           <ul className="flex gap-6 justify-center md:justify-start mb-3">
             <li className="text-sm text-center">
-              <span className="font-semibold text-gray-900">{blogs.length}</span>
-              {' '}<span className="text-gray-500">posts</span>
+              <span className="font-semibold" style={{ color: 'var(--text)' }}>{blogs.length}</span>
+              {' '}<span style={{ color: 'var(--text-muted)' }}>posts</span>
             </li>
             <li className="text-sm text-center cursor-pointer hover:opacity-70 transition">
-              <span className="font-semibold text-gray-900">{followerCount}</span>
-              {' '}<span className="text-gray-500">followers</span>
+              <span className="font-semibold" style={{ color: 'var(--text)' }}>{followerCount}</span>
+              {' '}<span style={{ color: 'var(--text-muted)' }}>followers</span>
             </li>
             <li className="text-sm text-center cursor-pointer hover:opacity-70 transition">
-              <span className="font-semibold text-gray-900">{user._count.following}</span>
-              {' '}<span className="text-gray-500">following</span>
+              <span className="font-semibold" style={{ color: 'var(--text)' }}>{user._count.following}</span>
+              {' '}<span style={{ color: 'var(--text-muted)' }}>following</span>
             </li>
           </ul>
 
@@ -164,11 +165,11 @@ export default function PublicProfilePage() {
               <button
                 onClick={handleFollow}
                 disabled={followLoading}
-                className={`flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full transition ${
-                  following
-                    ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 border border-gray-200'
-                    : 'bg-forest-600 text-white hover:bg-forest-700 border border-forest-600'
-                }`}
+                className="flex items-center gap-2 text-sm font-semibold px-5 py-2 rounded-full transition"
+                style={following
+                  ? { background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }
+                  : { background: 'var(--eco)', color: '#050C07' }
+                }
               >
                 {following ? (
                   <><UserCheck className="w-4 h-4" /> Following</>
@@ -178,7 +179,8 @@ export default function PublicProfilePage() {
               </button>
               <button
                 onClick={() => router.push(`/messages?with=${user.id}`)}
-                className="flex items-center gap-2 text-sm font-semibold text-forest-600 border border-forest-200 px-4 py-2 rounded-full hover:bg-forest-50 transition">
+                className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full transition"
+                style={{ color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}>
                 <MessageCircle className="w-4 h-4" />
                 Message
               </button>
@@ -187,7 +189,8 @@ export default function PublicProfilePage() {
 
           {isOwnProfile && (
             <Link href="/settings"
-              className="mt-3 inline-block text-sm font-semibold text-gray-600 border border-gray-200 px-5 py-2 rounded-full hover:bg-gray-50 transition">
+              className="mt-3 inline-block text-sm font-semibold px-5 py-2 rounded-full transition"
+              style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
               Edit Profile
             </Link>
           )}
@@ -195,22 +198,24 @@ export default function PublicProfilePage() {
       </header>
 
       {/* Divider */}
-      <div className="border-t border-gray-200 mb-6" />
+      <div className="mb-6" style={{ borderTop: '1px solid var(--border)' }} />
 
       {/* Posts grid */}
       {blogs.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16">
           <div className="text-4xl mb-3">🌱</div>
-          <p className="text-sm font-medium">No posts yet</p>
+          <p className="text-sm font-medium" style={{ color: 'var(--text-faint)' }}>No posts yet</p>
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-[3px]">
           {blogs.map(blog => (
             <Link key={blog.id} href={`/blogs/${blog.slug}`}
-              className="relative aspect-square bg-gray-100 overflow-hidden group">
+              className="relative aspect-square overflow-hidden group"
+              style={{ background: 'var(--bg-elevated)' }}>
               {blog.image
                 ? <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                : <div className="w-full h-full bg-gradient-to-br from-forest-100 to-forest-200 flex items-center justify-center">
+                : <div className="w-full h-full flex items-center justify-center"
+                    style={{ background: 'var(--eco-dim)' }}>
                     <span className="text-3xl">🌿</span>
                   </div>
               }

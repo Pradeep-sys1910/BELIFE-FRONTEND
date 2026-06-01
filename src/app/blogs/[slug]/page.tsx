@@ -32,7 +32,8 @@ function Avatar({ name, avatar, size = 36 }: { name: string; avatar?: string; si
   const s = { width: size, height: size, borderRadius: '50%' };
   if (avatar) return <img src={avatar} alt={name} style={{ ...s, objectFit: 'cover' }} />;
   return (
-    <div style={s} className="bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+    <div style={{ ...s, background: 'linear-gradient(135deg,#22C55E,#0F4C25)' }}
+      className="flex items-center justify-center text-white font-bold text-sm shrink-0">
       {name[0].toUpperCase()}
     </div>
   );
@@ -133,7 +134,7 @@ export default function BlogDetailPage() {
         <div className="skeleton h-9 w-2/3 rounded-lg mb-5" />
         <div className="skeleton h-5 w-full rounded-lg mb-2" />
         <div className="skeleton h-5 w-4/5 rounded-lg mb-7" />
-        <div className="flex items-center gap-3 mb-7 pb-7 border-b border-gray-100">
+        <div className="flex items-center gap-3 mb-7 pb-7" style={{ borderBottom: '1px solid var(--border)' }}>
           <div className="skeleton w-11 h-11 rounded-full shrink-0" />
           <div className="flex-1">
             <div className="skeleton h-4 w-36 rounded mb-2" />
@@ -152,8 +153,8 @@ export default function BlogDetailPage() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-2xl font-serif text-gray-700 mb-2">Story not found</p>
-          <p className="text-gray-400 text-sm mb-6">It may have been removed or the link is wrong.</p>
+          <p className="text-2xl font-serif mb-2" style={{ color: 'var(--text)' }}>Story not found</p>
+          <p className="text-sm mb-6" style={{ color: 'var(--text-faint)' }}>It may have been removed or the link is wrong.</p>
           <Link href="/" className="btn-primary">Back to home</Link>
         </div>
       </div>
@@ -166,34 +167,39 @@ export default function BlogDetailPage() {
       {/* Back + category */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition">
+          className="flex items-center gap-1.5 text-sm transition"
+          style={{ color: 'var(--text-faint)' }}>
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
-        <span className="text-gray-200">·</span>
+        <span style={{ color: 'var(--border)' }}>·</span>
         <Link href={`/categories/${blog.category?.slug}`}
-          className="text-xs font-medium text-forest-600 bg-forest-50 px-3 py-1 rounded-full hover:bg-forest-100 transition">
+          className="text-xs font-medium px-3 py-1 rounded-full transition"
+          style={{ color: 'var(--eco-bright)', background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
           {blog.category?.name}
         </Link>
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-gray-900 leading-tight mb-5">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold leading-tight mb-5"
+        style={{ color: 'var(--text)' }}>
         {blog.title}
       </h1>
 
       {/* Excerpt */}
       {blog.excerpt && (
-        <p className="text-base text-gray-500 leading-relaxed mb-6 font-normal">{blog.excerpt}</p>
+        <p className="text-base leading-relaxed mb-6 font-normal" style={{ color: 'var(--text-muted)' }}>{blog.excerpt}</p>
       )}
 
       {/* Author + meta */}
-      <div className="flex items-start justify-between gap-4 mb-7 pb-7 border-b border-gray-100">
+      <div className="flex items-start justify-between gap-4 mb-7 pb-7"
+        style={{ borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center gap-3">
           <Avatar name={blog.author?.name} avatar={blog.author?.avatar} size={40} />
           <div>
-            <p className="text-sm font-semibold text-gray-900">{blog.author?.name}</p>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-400 mt-0.5">
+            <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{blog.author?.name}</p>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs mt-0.5"
+              style={{ color: 'var(--text-faint)' }}>
               <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{blog.readTime} min read</span>
               <span>·</span>
               <span>{formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}</span>
@@ -206,18 +212,20 @@ export default function BlogDetailPage() {
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           <button onClick={handleLike}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition text-sm font-medium
-              ${liked ? 'bg-red-50 text-red-500' : 'hover:bg-gray-50 text-gray-400 hover:text-red-400'}`}>
-            <Heart className={`w-5 h-5 ${liked ? 'fill-red-500' : ''}`} strokeWidth={liked ? 0 : 1.8} />
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full transition text-sm font-medium"
+            style={{ color: liked ? '#F87171' : 'var(--text-faint)', background: liked ? 'rgba(248,113,113,0.1)' : 'transparent' }}>
+            <Heart className="w-5 h-5" style={{ fill: liked ? '#F87171' : 'none' }} strokeWidth={liked ? 0 : 1.8} />
             <span>{likeCount}</span>
           </button>
           <button onClick={handleShare}
-            className="p-2 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gray-700 transition">
+            className="p-2 rounded-full transition"
+            style={{ color: 'var(--text-faint)' }}>
             <Share2 className="w-5 h-5" strokeWidth={1.8} />
           </button>
           {user?.id === blog.author?.id && (
             <button onClick={handleDeleteBlog}
-              className="p-2 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-500 transition">
+              className="p-2 rounded-full transition"
+              style={{ color: 'var(--text-faint)' }}>
               <Trash2 className="w-5 h-5" strokeWidth={1.8} />
             </button>
           )}
@@ -226,20 +234,20 @@ export default function BlogDetailPage() {
 
       {/* Cover image */}
       {blog.image && (
-        <div className="w-full rounded-2xl overflow-hidden aspect-video mb-8 bg-gray-100">
+        <div className="w-full rounded-2xl overflow-hidden aspect-video mb-8"
+          style={{ background: 'var(--bg-elevated)' }}>
           <img src={blog.image} alt={blog.title} className="w-full h-full object-cover" />
         </div>
       )}
 
       {/* Markdown content */}
-      <div className="prose prose-base prose-gray max-w-none mb-10
-        prose-headings:font-serif prose-headings:text-gray-900
-        prose-p:text-gray-700 prose-p:leading-relaxed
-        prose-a:text-forest-600 prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-gray-900
-        prose-blockquote:border-forest-400 prose-blockquote:text-gray-500
-        prose-code:bg-gray-100 prose-code:text-forest-700 prose-code:rounded prose-code:px-1
-        prose-img:rounded-xl">
+      <div className="prose prose-base max-w-none mb-10
+        prose-headings:font-serif
+        prose-a:no-underline hover:prose-a:underline
+        prose-blockquote:border-l-4
+        prose-code:rounded prose-code:px-1
+        prose-img:rounded-xl"
+        style={{ color: 'var(--text)' } as React.CSSProperties}>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {blog.content}
         </ReactMarkdown>
@@ -247,36 +255,47 @@ export default function BlogDetailPage() {
 
       {/* Tags */}
       {blog.tags?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-10 pb-8 border-b border-gray-100">
+        <div className="flex flex-wrap gap-2 mb-10 pb-8" style={{ borderBottom: '1px solid var(--border)' }}>
           {blog.tags.map(tag => (
-            <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{tag}</span>
+            <span key={tag} className="text-xs px-3 py-1 rounded-full"
+              style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
+              {tag}
+            </span>
           ))}
         </div>
       )}
 
       {/* Author card */}
-      <div className="border border-gray-100 rounded-2xl p-6 mb-10 bg-white shadow-card">
-        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Written by</p>
+      <div className="rounded-2xl p-6 mb-10"
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+        <p className="text-[10px] font-semibold uppercase tracking-widest mb-4"
+          style={{ color: 'var(--text-faint)' }}>Written by</p>
         <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-forest-400 to-forest-700 shrink-0">
+          <div className="w-12 h-12 rounded-full p-[2px] shrink-0"
+            style={{ background: 'linear-gradient(135deg,#22C55E,#0F4C25)' }}>
             {blog.author?.avatar
               ? <img src={blog.author.avatar} alt={blog.author.name} className="w-full h-full rounded-full object-cover border-2 border-white" />
-              : <div className="w-full h-full rounded-full bg-forest-600 flex items-center justify-center text-white font-bold text-lg border-2 border-white">
+              : <div className="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-lg border-2 border-white"
+                  style={{ background: '#0F4C25' }}>
                   {blog.author?.name[0].toUpperCase()}
                 </div>
             }
           </div>
           <div>
-            <p className="font-semibold text-gray-900">{blog.author?.name}</p>
-            {blog.author?.bio && <p className="text-sm text-gray-500 mt-0.5 leading-relaxed line-clamp-2">{blog.author.bio}</p>}
+            <p className="font-semibold" style={{ color: 'var(--text)' }}>{blog.author?.name}</p>
+            {blog.author?.bio && (
+              <p className="text-sm mt-0.5 leading-relaxed line-clamp-2" style={{ color: 'var(--text-muted)' }}>
+                {blog.author.bio}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Comments */}
       <div id="comments">
-        <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-gray-400" strokeWidth={1.5} />
+        <h2 className="text-lg font-semibold mb-5 flex items-center gap-2" style={{ color: 'var(--text)' }}>
+          <MessageCircle className="w-5 h-5" style={{ color: 'var(--text-faint)' }} strokeWidth={1.5} />
           {blog.comments?.length || 0} Comments
         </h2>
 
@@ -291,18 +310,24 @@ export default function BlogDetailPage() {
                   placeholder="Add a comment..."
                   rows={3}
                   required
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white resize-none transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--eco)]"
+                  style={{
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text)',
+                  }}
                 />
                 <button type="submit" disabled={submitting}
-                  className="mt-2 bg-forest-800 hover:bg-forest-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
+                  className="mt-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60"
+                  style={{ background: 'var(--eco)', color: '#050C07' }}>
                   {submitting ? 'Posting...' : 'Post'}
                 </button>
               </div>
             </div>
           </form>
         ) : (
-          <div className="bg-gray-50 rounded-xl px-5 py-4 mb-7 text-sm text-gray-500">
-            <Link href="/login" className="text-forest-600 font-semibold hover:underline">Sign in</Link> to leave a comment.
+          <div className="rounded-xl px-5 py-4 mb-7 text-sm" style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>
+            <Link href="/login" className="font-semibold hover:underline" style={{ color: 'var(--eco-bright)' }}>Sign in</Link> to leave a comment.
           </div>
         )}
 
@@ -310,19 +335,23 @@ export default function BlogDetailPage() {
           {blog.comments?.map(c => (
             <div key={c.id} className="flex items-start gap-3">
               <Avatar name={c.author.name} avatar={c.author.avatar} size={32} />
-              <div className="flex-1 bg-gray-50 rounded-xl px-4 py-3">
+              <div className="flex-1 rounded-xl px-4 py-3"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold text-gray-900">{c.author.name}</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{c.author.name}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
+                    <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
+                      {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
+                    </span>
                     {user?.id === c.author.id && (
-                      <button onClick={() => handleDeleteComment(c.id)} className="text-gray-300 hover:text-red-400 transition">
+                      <button onClick={() => handleDeleteComment(c.id)} className="transition"
+                        style={{ color: 'var(--text-faint)' }}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">{c.content}</p>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{c.content}</p>
               </div>
             </div>
           ))}

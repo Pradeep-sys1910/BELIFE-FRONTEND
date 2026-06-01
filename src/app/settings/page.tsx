@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Lock, Bell, Shield, Camera, Check, Loader2 } from 'lucide-react';
+import { User, Lock, Bell, Shield, Check, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -10,10 +10,10 @@ import { useAuthStore } from '@/store/authStore';
 type Tab = 'profile' | 'account' | 'notifications' | 'privacy';
 
 const tabs: { id: Tab; label: string; icon: typeof User }[] = [
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'account', label: 'Account & Security', icon: Lock },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'privacy', label: 'Privacy', icon: Shield },
+  { id: 'profile',       label: 'Profile',              icon: User   },
+  { id: 'account',       label: 'Account & Security',   icon: Lock   },
+  { id: 'notifications', label: 'Notifications',        icon: Bell   },
+  { id: 'privacy',       label: 'Privacy',              icon: Shield },
 ];
 
 export default function SettingsPage() {
@@ -30,8 +30,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-[820px] mx-auto px-4 pt-8 pb-16">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Settings</h1>
-        <p className="text-sm text-gray-400 mt-1">Manage your profile, security, and preferences</p>
+        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Settings</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>Manage your profile, security, and preferences</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
@@ -40,24 +40,26 @@ export default function SettingsPage() {
           <div className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible no-scrollbar pb-2 md:pb-0">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap
-                  ${activeTab === id
-                    ? 'bg-forest-50 text-forest-700 font-semibold border border-forest-100'
-                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`}>
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap"
+                style={activeTab === id
+                  ? { background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)', fontWeight: 600 }
+                  : { color: 'var(--text-muted)', border: '1px solid transparent' }
+                }>
                 <Icon className="w-4 h-4 shrink-0" strokeWidth={activeTab === id ? 2.5 : 1.8} />
                 {label}
-                {activeTab === id && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-forest-500" />}
+                {activeTab === id && <div className="ml-auto w-1.5 h-1.5 rounded-full" style={{ background: 'var(--eco)' }} />}
               </button>
             ))}
           </div>
         </nav>
 
         {/* Content panel */}
-        <div className="flex-1 min-w-0 border border-gray-100 rounded-2xl p-6 shadow-card bg-white">
-          {activeTab === 'profile' && <ProfileTab user={user} token={token} setUser={setUser} />}
-          {activeTab === 'account' && <AccountTab />}
+        <div className="flex-1 min-w-0 rounded-2xl p-6"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          {activeTab === 'profile'       && <ProfileTab user={user} token={token} setUser={setUser} />}
+          {activeTab === 'account'       && <AccountTab />}
           {activeTab === 'notifications' && <NotificationsTab />}
-          {activeTab === 'privacy' && <PrivacyTab />}
+          {activeTab === 'privacy'       && <PrivacyTab />}
         </div>
       </div>
     </div>
@@ -65,9 +67,9 @@ export default function SettingsPage() {
 }
 
 function ProfileTab({ user, token, setUser }: { user: any; token: string | null; setUser: any }) {
-  const [form, setForm] = useState({ name: user.name || '', bio: user.bio || '' });
+  const [form, setForm]   = useState({ name: user.name || '', bio: user.bio || '' });
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved,  setSaved]  = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,63 +89,65 @@ function ProfileTab({ user, token, setUser }: { user: any; token: string | null;
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-6">Public profile</h2>
+      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Public profile</h2>
 
       {/* Avatar */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white text-2xl font-bold">
-            {user.name[0].toUpperCase()}
-          </div>
-          <button className="absolute bottom-0 right-0 w-7 h-7 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition shadow-sm">
-            <Camera className="w-3.5 h-3.5 text-gray-600" />
-          </button>
+        <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold shrink-0"
+          style={{ background: 'linear-gradient(135deg,#22C55E,#0F4C25)' }}>
+          {user.name[0].toUpperCase()}
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
-          <button className="text-xs text-forest-600 font-medium mt-1.5 hover:underline">Change photo</button>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{user.name}</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-faint)' }}>{user.email}</p>
         </div>
       </div>
 
       <form onSubmit={handleSave} className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Display name</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2"
+            style={{ color: 'var(--text-muted)' }}>Display name</label>
           <input
             type="text"
             value={form.name}
             onChange={e => setForm({ ...form, name: e.target.value })}
             required
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200"
+            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all"
+            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Bio</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2"
+            style={{ color: 'var(--text-muted)' }}>Bio</label>
           <textarea
             value={form.bio}
             onChange={e => setForm({ ...form, bio: e.target.value })}
             rows={4}
             maxLength={200}
             placeholder="Tell the community about yourself..."
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200 resize-none"
+            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all resize-none"
+            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
-          <p className="text-xs text-gray-400 mt-1 text-right">{form.bio.length}/200</p>
+          <p className="text-xs mt-1 text-right" style={{ color: 'var(--text-faint)' }}>{form.bio.length}/200</p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Email</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2"
+            style={{ color: 'var(--text-muted)' }}>Email</label>
           <input
             type="email"
             value={user.email}
             disabled
-            className="w-full px-3.5 py-2.5 border border-gray-100 rounded-xl text-sm text-gray-400 bg-gray-50 cursor-not-allowed"
+            className="w-full px-3.5 py-2.5 rounded-xl text-sm cursor-not-allowed"
+            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-faint)' }}
           />
-          <p className="text-xs text-gray-400 mt-1">Email cannot be changed.</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>Email cannot be changed.</p>
         </div>
 
         <button type="submit" disabled={saving}
-          className="flex items-center gap-2 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
+          style={{ background: 'var(--eco)', color: '#050C07' }}>
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : null}
           {saving ? 'Saving...' : saved ? 'Saved!' : 'Save changes'}
         </button>
@@ -185,91 +189,93 @@ function AccountTab() {
     }
   };
 
+  const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' };
+
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-6">Account & Security</h2>
+      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Account & Security</h2>
 
-      <div className="mb-8 p-4 bg-forest-50 border border-forest-100 rounded-xl">
-        <p className="text-sm font-medium text-forest-800 mb-1">Account status</p>
-        <p className="text-xs text-forest-600">Your email is verified and your account is active.</p>
+      <div className="mb-8 p-4 rounded-xl"
+        style={{ background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--eco-bright)' }}>Account status</p>
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Your email is verified and your account is active.</p>
       </div>
 
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">Change password</h3>
+      <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>Change password</h3>
       <form onSubmit={handleChangePassword} className="space-y-4 max-w-sm">
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Current password</label>
-          <input type="password" required value={form.currentPassword}
-            onChange={e => setForm({ ...form, currentPassword: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">New password</label>
-          <input type="password" required minLength={8} value={form.newPassword}
-            onChange={e => setForm({ ...form, newPassword: e.target.value })}
-            placeholder="Min. 8 characters"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Confirm new password</label>
-          <input type="password" required value={form.confirmPassword}
-            onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200" />
-        </div>
+        {(['currentPassword', 'newPassword', 'confirmPassword'] as const).map((field, i) => (
+          <div key={field}>
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-2"
+              style={{ color: 'var(--text-muted)' }}>
+              {['Current password', 'New password', 'Confirm new password'][i]}
+            </label>
+            <input type="password" required value={form[field]}
+              onChange={e => setForm({ ...form, [field]: e.target.value })}
+              placeholder={field === 'newPassword' ? 'Min. 8 characters' : undefined}
+              className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all"
+              style={inputStyle} />
+          </div>
+        ))}
         <button type="submit" disabled={saving}
-          className="flex items-center gap-2 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-60 shadow-sm hover:shadow-md active:scale-[0.98]">
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
+          style={{ background: 'var(--eco)', color: '#050C07' }}>
           {saving && <Loader2 className="w-4 h-4 animate-spin" />}
           {saving ? 'Updating...' : 'Update password'}
         </button>
       </form>
 
       {/* Danger zone */}
-      <div className="mt-10 pt-8 border-t border-gray-100">
-        <h3 className="text-sm font-semibold text-red-600 mb-1">Danger zone</h3>
+      <div className="mt-10 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
+        <h3 className="text-sm font-semibold text-red-500 mb-1">Danger zone</h3>
 
         {deleteStep === 'idle' && (
           <>
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>
               Permanently delete your account and all associated data. This cannot be undone.
             </p>
             <button onClick={() => setDeleteStep('confirm')}
-              className="text-sm font-medium text-red-500 border border-red-200 px-4 py-2 rounded-xl hover:bg-red-50 transition">
+              className="text-sm font-medium text-red-500 px-4 py-2 rounded-xl transition"
+              style={{ border: '1px solid rgba(239,68,68,0.3)' }}>
               Delete account
             </button>
           </>
         )}
 
         {deleteStep === 'confirm' && (
-          <div className="mt-2 bg-red-50 border border-red-200 rounded-xl p-5 space-y-4">
+          <div className="mt-2 rounded-xl p-5 space-y-4"
+            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
             <div className="space-y-1.5">
-              <p className="text-sm font-semibold text-red-700">Before you proceed, understand what this means:</p>
+              <p className="text-sm font-semibold text-red-500">Before you proceed, understand what this means:</p>
               {[
                 'Your profile and all personal data will be permanently deleted',
                 'All blog posts and articles you published will be deleted',
                 'All comments, likes, messages and conversations will be removed',
                 'BeLife does not own your content — once deleted, it will be removed from our platform',
               ].map(item => (
-                <div key={item} className="flex items-start gap-2 text-xs text-red-800">
+                <div key={item} className="flex items-start gap-2 text-xs text-red-400">
                   <span className="shrink-0 mt-0.5">✕</span><span>{item}</span>
                 </div>
               ))}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-red-700 mb-1.5">
-                Type <span className="font-mono bg-red-100 px-1 rounded">DELETE</span> to confirm
+              <label className="block text-xs font-semibold text-red-400 mb-1.5">
+                Type <span className="font-mono px-1 rounded" style={{ background: 'rgba(239,68,68,0.1)' }}>DELETE</span> to confirm
               </label>
               <input
                 type="text"
                 placeholder="DELETE"
                 value={deleteInput}
                 onChange={e => setDeleteInput(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-red-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent transition"
+                className="w-full px-3.5 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--text)' }}
               />
             </div>
 
             <div className="flex gap-3 pt-1">
               <button onClick={() => { setDeleteStep('idle'); setDeleteInput(''); }}
-                className="flex-1 border border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition"
+                style={{ border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
                 Cancel
               </button>
               <button
@@ -283,16 +289,17 @@ function AccountTab() {
         )}
 
         {deleteStep === 'sending' && (
-          <div className="mt-2 flex items-center gap-3 text-sm text-gray-500 p-4">
+          <div className="mt-2 flex items-center gap-3 text-sm p-4" style={{ color: 'var(--text-muted)' }}>
             <Loader2 className="w-4 h-4 animate-spin text-red-400" />
             Sending confirmation email...
           </div>
         )}
 
         {deleteStep === 'sent' && (
-          <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <p className="text-sm font-semibold text-amber-900 mb-1">Check your inbox</p>
-            <p className="text-xs text-amber-700 leading-relaxed">
+          <div className="mt-2 rounded-xl p-5"
+            style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}>
+            <p className="text-sm font-semibold text-amber-400 mb-1">Check your inbox</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               We've sent a confirmation link to your email. Click it to permanently delete your account.
               The link expires in <strong>1 hour</strong>. If you change your mind, just ignore the email
               — your account stays active.
@@ -304,46 +311,45 @@ function AccountTab() {
   );
 }
 
+function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <button onClick={onToggle}
+      className="relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 ml-4"
+      style={{ background: on ? 'var(--eco)' : 'var(--bg-elevated)', border: '1px solid var(--border)' }}>
+      <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${on ? 'translate-x-5' : 'translate-x-0'}`} />
+    </button>
+  );
+}
+
 function NotificationsTab() {
   const [prefs, setPrefs] = useState({
-    emailLikes: true,
-    emailComments: true,
-    emailFollowers: false,
-    emailWeeklyDigest: true,
+    emailLikes: true, emailComments: true, emailFollowers: false, emailWeeklyDigest: true,
   });
 
-  const toggle = (key: keyof typeof prefs) =>
-    setPrefs(p => ({ ...p, [key]: !p[key] }));
-
   const items = [
-    { key: 'emailLikes' as const, label: 'Someone likes your story', desc: 'Receive an email when someone likes your post' },
-    { key: 'emailComments' as const, label: 'New comment on your story', desc: 'Receive an email when someone comments' },
-    { key: 'emailFollowers' as const, label: 'New follower', desc: 'Receive an email when someone follows you' },
-    { key: 'emailWeeklyDigest' as const, label: 'Weekly digest', desc: 'A curated weekly summary of top stories' },
+    { key: 'emailLikes'         as const, label: 'Someone likes your story',     desc: 'Receive an email when someone likes your post' },
+    { key: 'emailComments'      as const, label: 'New comment on your story',     desc: 'Receive an email when someone comments' },
+    { key: 'emailFollowers'     as const, label: 'New follower',                  desc: 'Receive an email when someone follows you' },
+    { key: 'emailWeeklyDigest'  as const, label: 'Weekly digest',                 desc: 'A curated weekly summary of top stories' },
   ];
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-6">Notification preferences</h2>
-      <div className="space-y-4">
+      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Notification preferences</h2>
+      <div className="space-y-1">
         {items.map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+          <div key={key} className="flex items-center justify-between py-3.5"
+            style={{ borderBottom: '1px solid var(--border)' }}>
             <div>
-              <p className="text-sm font-medium text-gray-900">{label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-faint)' }}>{desc}</p>
             </div>
-            <button
-              onClick={() => toggle(key)}
-              className={`relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 ml-4
-                ${prefs[key] ? 'bg-forest-600' : 'bg-gray-200'}`}
-            >
-              <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200
-                ${prefs[key] ? 'translate-x-5' : 'translate-x-0'}`} />
-            </button>
+            <Toggle on={prefs[key]} onToggle={() => setPrefs(p => ({ ...p, [key]: !p[key] }))} />
           </div>
         ))}
       </div>
-      <button className="mt-6 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+      <button className="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+        style={{ background: 'var(--eco)', color: '#050C07' }}
         onClick={() => toast.success('Preferences saved')}>
         Save preferences
       </button>
@@ -353,42 +359,32 @@ function NotificationsTab() {
 
 function PrivacyTab() {
   const [prefs, setPrefs] = useState({
-    publicProfile: true,
-    showEmail: false,
-    allowMessages: true,
+    publicProfile: true, showEmail: false, allowMessages: true,
   });
 
-  const toggle = (key: keyof typeof prefs) =>
-    setPrefs(p => ({ ...p, [key]: !p[key] }));
-
   const items = [
-    { key: 'publicProfile' as const, label: 'Public profile', desc: 'Anyone can view your profile and stories' },
-    { key: 'showEmail' as const, label: 'Show email on profile', desc: 'Your email address will be visible to others' },
-    { key: 'allowMessages' as const, label: 'Allow direct messages', desc: 'Let other members send you messages' },
+    { key: 'publicProfile'  as const, label: 'Public profile',          desc: 'Anyone can view your profile and stories' },
+    { key: 'showEmail'      as const, label: 'Show email on profile',    desc: 'Your email address will be visible to others' },
+    { key: 'allowMessages'  as const, label: 'Allow direct messages',    desc: 'Let other members send you messages' },
   ];
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-900 mb-6">Privacy settings</h2>
-      <div className="space-y-4">
+      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Privacy settings</h2>
+      <div className="space-y-1">
         {items.map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+          <div key={key} className="flex items-center justify-between py-3.5"
+            style={{ borderBottom: '1px solid var(--border)' }}>
             <div>
-              <p className="text-sm font-medium text-gray-900">{label}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-faint)' }}>{desc}</p>
             </div>
-            <button
-              onClick={() => toggle(key)}
-              className={`relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 ml-4
-                ${prefs[key] ? 'bg-forest-600' : 'bg-gray-200'}`}
-            >
-              <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200
-                ${prefs[key] ? 'translate-x-5' : 'translate-x-0'}`} />
-            </button>
+            <Toggle on={prefs[key]} onToggle={() => setPrefs(p => ({ ...p, [key]: !p[key] }))} />
           </div>
         ))}
       </div>
-      <button className="mt-6 bg-forest-800 hover:bg-forest-900 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+      <button className="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+        style={{ background: 'var(--eco)', color: '#050C07' }}
         onClick={() => toast.success('Privacy settings saved')}>
         Save settings
       </button>
