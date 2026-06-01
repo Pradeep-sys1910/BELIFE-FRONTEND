@@ -7,8 +7,8 @@ import toast from 'react-hot-toast';
 import api from '@/lib/api';
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [email,   setEmail]   = useState('');
+  const [sent,    setSent]    = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,33 +26,37 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10">
-        <Link href="/login" className="inline-flex items-center gap-2 text-forest-600 mb-6 hover:underline">
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--bg)' }}>
+      <div className="max-w-md w-full rounded-3xl p-10" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+        <Link href="/login" className="inline-flex items-center gap-2 mb-6 transition"
+          style={{ color: 'var(--eco-bright)' }}>
           <ArrowLeft className="w-4 h-4" /> Back to login
         </Link>
 
         <div className="text-center mb-8">
-          <Leaf className="w-12 h-12 text-forest-600 mx-auto mb-3" />
-          <h1 className="font-serif text-3xl text-forest-700 mb-2">Forgot Password?</h1>
-          <p className="text-forest-500">We'll send you reset instructions</p>
+          <Leaf className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--eco)' }} />
+          <h1 className="font-serif text-3xl mb-2" style={{ color: 'var(--text)' }}>Forgot Password?</h1>
+          <p style={{ color: 'var(--text-muted)' }}>We'll send you reset instructions</p>
         </div>
 
         {sent ? (
-          <div className="text-center bg-forest-50 p-6 rounded-2xl">
-            <Mail className="w-12 h-12 text-forest-600 mx-auto mb-3" />
-            <p className="text-forest-700 font-medium mb-2">Check your inbox</p>
-            <p className="text-sm text-forest-500">We've sent a password reset link to <strong>{email}</strong></p>
+          <div className="text-center p-6 rounded-2xl" style={{ background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
+            <Mail className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--eco-bright)' }} />
+            <p className="font-medium mb-2" style={{ color: 'var(--eco-bright)' }}>Check your inbox</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+              We've sent a password reset link to <strong>{email}</strong>
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="relative">
-              <Mail className="absolute left-4 top-3.5 w-5 h-5 text-forest-400" />
+              <Mail className="absolute left-4 top-3.5 w-5 h-5" style={{ color: 'var(--text-faint)' }} />
               <input
                 type="email" required placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-cream-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500"
+                className="w-full pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--eco)]"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' }}
               />
             </div>
 

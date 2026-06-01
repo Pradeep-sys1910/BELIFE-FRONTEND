@@ -17,16 +17,14 @@ const CATEGORIES = [
   { value: 'SUSTAINABLE_LIVING',label: 'Sustainable Living', emoji: '🏡' },
 ];
 
-const inputCls = "w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200";
-
 export default function NewGroupPage() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [name, setName] = useState('');
+  const [name,        setName]        = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('GENERAL');
-  const [privacy, setPrivacy] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
-  const [loading, setLoading] = useState(false);
+  const [category,    setCategory]    = useState('GENERAL');
+  const [privacy,     setPrivacy]     = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
+  const [loading,     setLoading]     = useState(false);
 
   if (!user) { router.push('/login'); return null; }
 
@@ -45,51 +43,56 @@ export default function NewGroupPage() {
     }
   };
 
+  const inputStyle = { background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' };
+  const labelStyle = { color: 'var(--text-muted)' };
+
   return (
     <div className="max-w-2xl mx-auto px-4 pt-8 pb-24 animate-fade-in">
       <button onClick={() => router.back()}
-        className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 transition mb-6">
+        className="flex items-center gap-2 text-sm transition mb-6"
+        style={{ color: 'var(--text-faint)' }}>
         <ArrowLeft className="w-4 h-4" /> Back to Groups
       </button>
 
-      <h1 className="text-2xl font-semibold text-gray-900 tracking-tight mb-1">Create a Group</h1>
-      <p className="text-sm text-gray-400 mb-8">Build a space for your eco community</p>
+      <h1 className="text-2xl font-semibold tracking-tight mb-1" style={{ color: 'var(--text)' }}>Create a Group</h1>
+      <p className="text-sm mb-8" style={{ color: 'var(--text-faint)' }}>Build a space for your eco community</p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Group Name</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={labelStyle}>Group Name</label>
           <input
-            type="text"
-            required
+            type="text" required
             placeholder="e.g. Zero Waste Chennai"
             value={name}
             onChange={e => setName(e.target.value)}
             maxLength={80}
-            className={inputCls}
+            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all"
+            style={inputStyle}
           />
-          <p className="text-xs text-gray-400 mt-1.5 text-right">{name.length}/80</p>
+          <p className="text-xs mt-1.5 text-right" style={{ color: 'var(--text-faint)' }}>{name.length}/80</p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Description</label>
-          <textarea
-            rows={4}
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={labelStyle}>Description</label>
+          <textarea rows={4}
             placeholder="What is this group about?"
             value={description}
             onChange={e => setDescription(e.target.value)}
-            className={inputCls + ' resize-none'}
+            className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all resize-none"
+            style={inputStyle}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Category</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={labelStyle}>Category</label>
           <div className="flex gap-2 flex-wrap">
             {CATEGORIES.map(c => (
               <button type="button" key={c.value} onClick={() => setCategory(c.value)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
-                  ${category === c.value
-                    ? 'bg-forest-800 text-white border-forest-800'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-forest-300 hover:text-forest-700'}`}>
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={category === c.value
+                  ? { background: 'var(--eco)', color: '#050C07', border: '1px solid transparent' }
+                  : { background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }
+                }>
                 {c.emoji} {c.label}
               </button>
             ))}
@@ -97,16 +100,17 @@ export default function NewGroupPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Privacy</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-2" style={labelStyle}>Privacy</label>
           <div className="flex gap-3">
             {(['PUBLIC', 'PRIVATE'] as const).map(p => (
               <button type="button" key={p} onClick={() => setPrivacy(p)}
-                className={`flex-1 py-3 rounded-xl text-sm font-semibold border transition-all
-                  ${privacy === p
-                    ? 'bg-forest-800 text-white border-forest-800'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-forest-300'}`}>
+                className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all"
+                style={privacy === p
+                  ? { background: 'var(--eco)', color: '#050C07', border: '1px solid transparent' }
+                  : { background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }
+                }>
                 {p === 'PUBLIC' ? '🌍 Public' : '🔒 Private'}
-                <p className={`text-xs font-normal mt-0.5 ${privacy === p ? 'text-white/70' : 'text-gray-400'}`}>
+                <p className="text-xs font-normal mt-0.5" style={{ color: privacy === p ? 'rgba(5,12,7,0.7)' : 'var(--text-faint)' }}>
                   {p === 'PUBLIC' ? 'Anyone can join' : 'Invite only'}
                 </p>
               </button>
@@ -115,7 +119,8 @@ export default function NewGroupPage() {
         </div>
 
         <button type="submit" disabled={loading}
-          className="w-full bg-forest-800 hover:bg-forest-900 text-white py-3 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 shadow-sm hover:shadow-md active:scale-[0.98]">
+          className="w-full py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
+          style={{ background: 'var(--eco)', color: '#050C07' }}>
           {loading ? 'Creating…' : 'Create Group'}
         </button>
       </form>
