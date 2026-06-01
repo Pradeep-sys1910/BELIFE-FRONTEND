@@ -22,7 +22,7 @@ interface Blog {
 
 function BlogCardSkeleton() {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-card">
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
       <div className="skeleton h-48 w-full rounded-none" />
       <div className="p-5 space-y-3">
         <div className="skeleton h-3 w-16 rounded-full" />
@@ -73,26 +73,26 @@ export default function BlogsPage() {
 
       {/* Header */}
       <div className="mb-8 animate-fade-in">
-        <h1 className="font-serif text-3xl font-bold text-gray-900 mb-1">All Stories</h1>
-        <p className="text-sm text-gray-500">Discover mindful living through every story</p>
+        <h1 className="font-serif text-3xl font-bold mb-1" style={{ color: 'var(--text)' }}>All Stories</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Discover mindful living through every story</p>
       </div>
 
       {/* Search */}
       <form onSubmit={handleSearch} className="mb-8 animate-fade-in stagger-1">
         <div className="relative max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-faint)' }} />
           <input
             type="text"
             placeholder="Search stories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm
-                       focus:outline-none focus:ring-2 focus:ring-forest-500/40 focus:border-forest-400
-                       transition-all duration-200 shadow-sm"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)] transition-all"
+            style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
           {search && (
             <button type="submit"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-forest-600 hover:text-forest-700">
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold"
+              style={{ color: 'var(--eco-bright)' }}>
               Search
             </button>
           )}
@@ -107,8 +107,8 @@ export default function BlogsPage() {
       ) : blogs.length === 0 ? (
         <div className="text-center py-24 animate-fade-in">
           <div className="text-5xl mb-4">🌱</div>
-          <p className="text-gray-600 font-medium mb-1">No stories found</p>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="font-medium mb-1" style={{ color: 'var(--text-muted)' }}>No stories found</p>
+          <p className="text-sm mb-6" style={{ color: 'var(--text-faint)' }}>
             {search ? `Nothing matched "${search}"` : 'Be the first to share a story'}
           </p>
           {user && <Link href="/blogs/new" className="btn-primary">Write the first one</Link>}
@@ -119,10 +119,10 @@ export default function BlogsPage() {
             <Link
               key={blog.id}
               href={`/blogs/${blog.slug}`}
-              className={`card-blog group animate-slide-up stagger-${Math.min(i + 1, 6)}`}
+              className={`card-blog group animate-slide-up stagger-${Math.min(i + 1, 6)} overflow-hidden rounded-2xl block`}
               style={{ animationDelay: `${i * 0.05}s` }}
             >
-              <div className="h-44 overflow-hidden bg-forest-50">
+              <div className="h-44 overflow-hidden" style={{ background: 'var(--eco-dim)' }}>
                 {blog.image
                   ? <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   : <div className="w-full h-full flex items-center justify-center text-3xl">🌿</div>
@@ -130,16 +130,21 @@ export default function BlogsPage() {
               </div>
               <div className="p-5">
                 {blog.category && (
-                  <span className="inline-block text-xs font-medium text-forest-600 bg-forest-50 border border-forest-100 px-2.5 py-0.5 rounded-full mb-3">
+                  <span className="inline-block text-xs font-medium px-2.5 py-0.5 rounded-full mb-3"
+                    style={{ color: 'var(--eco-bright)', background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
                     {blog.category.name}
                   </span>
                 )}
-                <h2 className="font-serif text-base font-semibold text-gray-900 leading-snug mb-1.5 line-clamp-2 group-hover:text-forest-700 transition-colors duration-200">
+                <h2 className="font-serif text-base font-semibold leading-snug mb-1.5 line-clamp-2 transition-colors"
+                  style={{ color: 'var(--text)' }}>
                   {blog.title}
                 </h2>
-                <p className="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">{blog.excerpt}</p>
-                <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-3">
-                  <span className="font-medium text-gray-500">{blog.author?.name}</span>
+                <p className="text-xs line-clamp-2 mb-4 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                  {blog.excerpt}
+                </p>
+                <div className="flex items-center justify-between text-xs pt-3"
+                  style={{ borderTop: '1px solid var(--border)', color: 'var(--text-faint)' }}>
+                  <span className="font-medium" style={{ color: 'var(--text-muted)' }}>{blog.author?.name}</span>
                   <span>{blog.readTime} min · {formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}</span>
                 </div>
               </div>
@@ -155,10 +160,11 @@ export default function BlogsPage() {
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`w-9 h-9 rounded-xl text-sm font-semibold transition-all duration-200
-                ${page === p
-                  ? 'bg-forest-700 text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-forest-400 hover:text-forest-600'}`}
+              className="w-9 h-9 rounded-xl text-sm font-semibold transition-all"
+              style={page === p
+                ? { background: 'var(--eco)', color: '#050C07' }
+                : { background: 'var(--bg-card)', color: 'var(--text-muted)', border: '1px solid var(--border)' }
+              }
             >
               {p}
             </button>
