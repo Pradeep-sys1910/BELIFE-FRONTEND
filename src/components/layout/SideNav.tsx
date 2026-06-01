@@ -39,7 +39,7 @@ export default function SideNav() {
     >
       {/* Logo */}
       <Link href="/" className="flex items-center px-2 pb-5">
-        <Image src="/logo.png" alt="BeLife" width={148} height={54} className="object-contain" priority />
+        <Image src="/logo.png" alt="BeLife" width={160} height={66} className="object-contain" priority />
       </Link>
 
       {/* Nav links */}

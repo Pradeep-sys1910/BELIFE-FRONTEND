@@ -14,7 +14,7 @@ export default function Navbar() {
     <nav className="absolute top-0 left-0 right-0 z-50 bg-transparent">
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <Link href="/dashboard">
-          <Image src="/logo.png" alt="BeLife" width={140} height={52} className="object-contain" priority />
+          <Image src="/logo.png" alt="BeLife" width={150} height={62} className="object-contain" priority />
         </Link>
 
         <div className="hidden lg:flex items-center gap-10">

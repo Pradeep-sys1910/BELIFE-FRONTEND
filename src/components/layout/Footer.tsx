@@ -34,7 +34,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <Image src="/logo.png" alt="BeLife" width={120} height={44} className="object-contain brightness-[2] opacity-90" />
+              <Image src="/logo.png" alt="BeLife" width={130} height={54} className="object-contain" />
             </Link>
             <p className="text-sm text-white/40 leading-relaxed max-w-[200px]">
               Sustainable living stories, one post at a time.

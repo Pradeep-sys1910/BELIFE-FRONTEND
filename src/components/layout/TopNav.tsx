@@ -25,7 +25,7 @@ export default function TopNav() {
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-3">
         {/* Logo */}
         <Link href="/dashboard" className="shrink-0">
-          <Image src="/logo.png" alt="BeLife" width={100} height={36} className="object-contain" priority />
+          <Image src="/logo.png" alt="BeLife" width={110} height={46} className="object-contain" priority />
         </Link>
 
         {/* Search bar */}

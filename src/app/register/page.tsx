@@ -107,7 +107,7 @@ export default function RegisterPage() {
         }} />
 
         <Link href="/" className="relative z-10">
-          <Image src="/logo.png" alt="BeLife" width={128} height={48} className="object-contain" priority />
+          <Image src="/logo.png" alt="BeLife" width={140} height={58} className="object-contain" priority />
         </Link>
 
         <div className="relative z-10">
@@ -144,7 +144,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-[360px] animate-fade-in">
 
           <Link href="/" className="inline-block mb-8 lg:hidden">
-            <Image src="/logo.png" alt="BeLife" width={110} height={40} className="object-contain" priority />
+            <Image src="/logo.png" alt="BeLife" width={120} height={50} className="object-contain" priority />
           </Link>
 
           {done ? (
