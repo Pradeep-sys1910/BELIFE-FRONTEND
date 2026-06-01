@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     description: 'Discover mindful living, eco-tips and sustainable stories from a community that cares about the planet.',
     images: ['/logo.png'],
   },
-  alternates: { canonical: 'https://www.belife.site' },
   icons: {
     icon: [{ url: '/favicon.jpg', type: 'image/jpeg' }],
     apple: '/favicon.jpg',

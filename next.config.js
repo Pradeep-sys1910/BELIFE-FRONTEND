@@ -10,8 +10,17 @@ const r2Hostname = process.env.NEXT_PUBLIC_R2_HOSTNAME ||
 
 const nextConfig = {
   typescript: {
-    // TODO: remove once all TS errors are resolved — silencing hides potential bugs
     ignoreBuildErrors: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'belife.site' }],
+        destination: 'https://www.belife.site/:path*',
+        permanent: true,
+      },
+    ];
   },
   images: {
     remotePatterns: [
