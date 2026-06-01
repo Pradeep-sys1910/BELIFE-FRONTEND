@@ -7,6 +7,7 @@ import { MessageCircle, UserPlus, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import { getEcoBadge } from '@/lib/ecoBadge';
 
 interface PublicUser {
   id: string;
@@ -138,10 +139,22 @@ export default function PublicProfilePage() {
             </li>
           </ul>
 
+          {/* Eco badge */}
+          {(() => {
+            const badge = getEcoBadge(blogs.length, followerCount);
+            return (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold mb-2"
+                style={{ background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
+                title={badge.description}>
+                {badge.emoji} {badge.label}
+              </div>
+            );
+          })()}
+
           {user.bio && (
-            <p className="text-sm text-gray-700 whitespace-pre-line">{user.bio}</p>
+            <p className="text-sm whitespace-pre-line" style={{ color: 'var(--text-muted)' }}>{user.bio}</p>
           )}
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>
             Member since {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
           </p>
 

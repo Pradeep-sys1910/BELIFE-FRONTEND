@@ -6,20 +6,25 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   Home, Compass, Tag, PenSquare, User, LogOut,
   MessageCircle, Settings, Users, UsersRound,
+  Bell, Lightbulb, Megaphone, Trophy,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import ThemeToggle from '@/components/ThemeToggle';
+import NotificationBell from '@/components/layout/NotificationBell';
 
 const navItems = [
-  { href: '/',           icon: Home,          label: 'Home' },
-  { href: '/blogs',      icon: Compass,       label: 'Explore' },
-  { href: '/categories', icon: Tag,           label: 'Topics' },
-  { href: '/forum',      icon: Users,         label: 'Forum' },
-  { href: '/groups',     icon: UsersRound,    label: 'Groups' },
-  { href: '/messages',   icon: MessageCircle, label: 'Messages', auth: true },
-  { href: '/blogs/new',  icon: PenSquare,     label: 'Write',    auth: true },
-  { href: '/dashboard',  icon: User,          label: 'Profile',  auth: true },
-  { href: '/settings',   icon: Settings,      label: 'Settings', auth: true },
+  { href: '/',            icon: Home,          label: 'Home' },
+  { href: '/blogs',       icon: Compass,       label: 'Explore' },
+  { href: '/thoughts',    icon: Lightbulb,     label: 'Thoughts' },
+  { href: '/categories',  icon: Tag,           label: 'Topics' },
+  { href: '/forum',       icon: Users,         label: 'Forum' },
+  { href: '/groups',      icon: UsersRound,    label: 'Groups' },
+  { href: '/campaigns',   icon: Megaphone,     label: 'Campaigns' },
+  { href: '/challenges',  icon: Trophy,        label: 'Challenges' },
+  { href: '/messages',    icon: MessageCircle, label: 'Messages',  auth: true },
+  { href: '/blogs/new',   icon: PenSquare,     label: 'Write',     auth: true },
+  { href: '/dashboard',   icon: User,          label: 'Profile',   auth: true },
+  { href: '/settings',    icon: Settings,      label: 'Settings',  auth: true },
 ];
 
 export default function SideNav() {
@@ -30,13 +35,10 @@ export default function SideNav() {
   return (
     <nav
       className="hidden md:flex fixed left-0 top-0 h-screen w-[244px] flex-col py-5 px-3 z-50"
-      style={{
-        background:  'var(--bg-sidebar)',
-        borderRight: '1px solid var(--border)',
-      }}
+      style={{ background: 'var(--bg-sidebar)', borderRight: '1px solid var(--border)' }}
     >
       {/* Logo */}
-      <Link href="/" className="flex items-center px-2 pb-6">
+      <Link href="/" className="flex items-center px-2 pb-5">
         <Image src="/logo.png" alt="BeLife" width={148} height={54} className="object-contain" priority />
       </Link>
 
@@ -51,7 +53,7 @@ export default function SideNav() {
               href={href}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.97] group relative"
               style={{
-                background: active ? 'var(--eco-dim)'   : undefined,
+                background: active ? 'var(--eco-dim)'    : undefined,
                 color:      active ? 'var(--eco-bright)' : 'var(--text-muted)',
               }}
             >
@@ -74,10 +76,7 @@ export default function SideNav() {
               {active && (
                 <span
                   className="ml-auto w-1.5 h-1.5 rounded-full relative z-10"
-                  style={{
-                    background: 'var(--eco-bright)',
-                    boxShadow:  '0 0 6px var(--eco)',
-                  }}
+                  style={{ background: 'var(--eco-bright)', boxShadow: '0 0 6px var(--eco)' }}
                 />
               )}
             </Link>
@@ -85,25 +84,30 @@ export default function SideNav() {
         })}
       </div>
 
+      {/* Notification bell */}
+      {user && (
+        <div className="px-3 py-2 mt-1">
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Notifications</span>
+          </div>
+        </div>
+      )}
+
       {/* Theme toggle */}
-      <div className="mt-3 mb-2 px-1">
+      <div className="mt-2 mb-2 px-1">
         <ThemeToggle />
       </div>
 
       {/* User section */}
-      <div
-        className="flex flex-col gap-1 pt-3"
-        style={{ borderTop: '1px solid var(--border)' }}
-      >
+      <div className="flex flex-col gap-1 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
         {user ? (
           <>
             <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl">
               {user.avatar ? (
-                <img
-                  src={user.avatar} alt={user.name}
+                <img src={user.avatar} alt={user.name}
                   className="w-8 h-8 rounded-full object-cover shrink-0"
-                  style={{ border: '1.5px solid var(--eco-dim)' }}
-                />
+                  style={{ border: '1.5px solid var(--eco-dim)' }} />
               ) : (
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
@@ -127,29 +131,22 @@ export default function SideNav() {
               className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm w-full group"
               style={{ color: 'var(--text-faint)' }}
             >
-              <span
-                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                style={{ background: 'rgba(239,68,68,0.07)' }}
-                aria-hidden
-              />
+              <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                style={{ background: 'rgba(239,68,68,0.07)' }} aria-hidden />
               <LogOut className="w-4 h-4 relative z-10 group-hover:text-red-400 transition-colors" strokeWidth={1.5} />
               <span className="relative z-10 group-hover:text-red-400 transition-colors">Log out</span>
             </button>
           </>
         ) : (
           <div className="flex flex-col gap-2 px-1">
-            <Link
-              href="/register"
+            <Link href="/register"
               className="w-full text-center py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95"
-              style={{ background: 'var(--eco)', color: '#050C07' }}
-            >
+              style={{ background: 'var(--eco)', color: '#050C07' }}>
               Join BeLife
             </Link>
-            <Link
-              href="/login"
+            <Link href="/login"
               className="w-full text-center py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-              style={{ color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
-            >
+              style={{ color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}>
               Sign In
             </Link>
           </div>
