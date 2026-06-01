@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Home, Compass, Tag, PenSquare, User, LogOut,
+  Home, Compass, Search, Tag, PenSquare, User, LogOut,
   MessageCircle, Settings, Users, UsersRound,
   Bell, Lightbulb, Megaphone, Trophy,
 } from 'lucide-react';
@@ -15,6 +15,7 @@ import NotificationBell from '@/components/layout/NotificationBell';
 const navItems = [
   { href: '/',            icon: Home,          label: 'Home' },
   { href: '/blogs',       icon: Compass,       label: 'Explore' },
+  { href: '/search',      icon: Search,        label: 'Search' },
   { href: '/thoughts',    icon: Lightbulb,     label: 'Thoughts' },
   { href: '/categories',  icon: Tag,           label: 'Topics' },
   { href: '/forum',       icon: Users,         label: 'Forum' },

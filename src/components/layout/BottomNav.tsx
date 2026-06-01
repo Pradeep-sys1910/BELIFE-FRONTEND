@@ -2,15 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, PenSquare, Tag, User } from 'lucide-react';
+import { Home, Compass, PenSquare, Lightbulb, User } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 const items = [
-  { href: '/',           icon: Home,      label: 'Home' },
-  { href: '/blogs',      icon: Compass,   label: 'Explore' },
-  { href: '/blogs/new',  icon: PenSquare, label: 'Write',   auth: true },
-  { href: '/categories', icon: Tag,       label: 'Topics' },
-  { href: '/dashboard',  icon: User,      label: 'Profile', auth: true },
+  { href: '/',          icon: Home,      label: 'Home' },
+  { href: '/blogs',     icon: Compass,   label: 'Explore' },
+  { href: '/blogs/new', icon: PenSquare, label: 'Write',    auth: true },
+  { href: '/thoughts',  icon: Lightbulb, label: 'Thoughts' },
+  { href: '/dashboard', icon: User,      label: 'Profile',  auth: true },
 ];
 
 const HIDE_ON = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password'];

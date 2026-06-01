@@ -7,6 +7,7 @@ import { Grid3x3, PenSquare, Settings, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuthStore } from '@/store/authStore';
 import api from '@/lib/api';
+import { getEcoBadge } from '@/lib/ecoBadge';
 
 interface Blog {
   id: string; title: string; slug: string; image: string;
@@ -17,14 +18,19 @@ interface Blog {
 export default function DashboardPage() {
   const router   = useRouter();
   const { user } = useAuthStore();
-  const [blogs,   setBlogs]   = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs,          setBlogs]          = useState<Blog[]>([]);
+  const [followerCount,  setFollowerCount]  = useState(0);
+  const [loading,        setLoading]        = useState(true);
 
   useEffect(() => {
     if (!user) { router.push('/login'); return; }
-    api.get('/blogs', { params: { author: user.id, limit: 18 } })
-      .then(r => setBlogs((r.data as any).blogs || []))
-      .catch(() => setBlogs([]))
+    Promise.all([
+      api.get('/blogs', { params: { author: user.id, limit: 18 } }),
+      user.username ? api.get(`/users/${user.username}/profile`) : Promise.resolve(null),
+    ]).then(([blogsRes, profileRes]) => {
+      setBlogs((blogsRes.data as any).blogs || []);
+      if (profileRes) setFollowerCount(profileRes.data.user._count?.followers ?? 0);
+    }).catch(() => setBlogs([]))
       .finally(() => setLoading(false));
   }, [user]);
 
@@ -85,12 +91,28 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats */}
-          <ul className="flex gap-6 justify-center md:justify-start mb-4">
+          <ul className="flex gap-6 justify-center md:justify-start mb-3">
             <li className="text-sm">
               <span className="font-semibold" style={{ color: '#E8F5EC' }}>{loading ? '—' : blogs.length}</span>
               {' '}<span style={{ color: 'var(--text-muted)' }}>posts</span>
             </li>
+            <li className="text-sm">
+              <span className="font-semibold" style={{ color: '#E8F5EC' }}>{loading ? '—' : followerCount}</span>
+              {' '}<span style={{ color: 'var(--text-muted)' }}>followers</span>
+            </li>
           </ul>
+
+          {/* Eco badge */}
+          {!loading && (() => {
+            const badge = getEcoBadge(blogs.length, followerCount);
+            return (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold mb-3"
+                style={{ background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
+                title={badge.description}>
+                {badge.emoji} {badge.label}
+              </div>
+            );
+          })()}
 
           {/* Bio */}
           <div className="text-sm text-left">
