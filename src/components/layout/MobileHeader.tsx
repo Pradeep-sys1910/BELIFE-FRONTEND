@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { PenSquare } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import NotificationBell from './NotificationBell';
 
@@ -29,24 +28,17 @@ export default function MobileHeader() {
         <Image src="/logo.png" alt="BeLife" width={90} height={38} className="object-contain" priority />
       </Link>
 
-      <div className="flex items-center gap-1">
-        {user && (
-          <>
-            <NotificationBell />
-            <Link href="/blogs/new"
-              className="flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200"
+      <div className="flex items-center">
+        {user
+          ? <NotificationBell />
+          : (
+            <Link href="/login"
+              className="text-xs font-semibold px-4 py-2 rounded-xl transition-all"
               style={{ background: 'var(--eco)', color: '#050C07' }}>
-              <PenSquare className="w-4 h-4" strokeWidth={2.2} />
+              Sign In
             </Link>
-          </>
-        )}
-        {!user && (
-          <Link href="/login"
-            className="text-xs font-semibold px-4 py-2 rounded-xl transition-all"
-            style={{ background: 'var(--eco)', color: '#050C07' }}>
-            Sign In
-          </Link>
-        )}
+          )
+        }
       </div>
     </header>
   );

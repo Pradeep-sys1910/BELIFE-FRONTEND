@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <MobileHeader />
             <div className="flex min-h-screen">
               <SideNav />
-              <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-20 md:pb-0 min-w-0">
+              <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0 min-w-0">
                 {children}
               </main>
             </div>
