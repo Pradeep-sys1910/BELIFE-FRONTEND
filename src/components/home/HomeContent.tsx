@@ -336,15 +336,34 @@ export default function HomeContent() {
           </p>
         </div>
       ) : feed.length === 0 ? (
-        <div className="text-center py-24">
-          <div className="text-5xl mb-4">🌱</div>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: '#E8F5EC' }}>No stories yet</h3>
-          <p className="text-sm mb-6 max-w-xs mx-auto" style={{ color: 'var(--text-muted)' }}>
-            Be the first to share an eco story with the community.
-          </p>
-          {user
-            ? <Link href="/blogs/new" className="btn-primary">Write a Story</Link>
-            : <Link href="/register" className="btn-primary">Join & Write</Link>}
+        <div className="py-10">
+          {/* Hero for new visitors */}
+          {!user && (
+            <div className="rounded-2xl p-8 mb-8 text-center"
+              style={{ background: 'var(--bg-card)', border: '1px solid var(--border-eco)' }}>
+              <div className="text-5xl mb-4">🌿</div>
+              <h2 className="text-2xl font-bold mb-2" style={{ color: '#E8F5EC' }}>
+                Stories for a Greener World
+              </h2>
+              <p className="text-sm mb-6 max-w-sm mx-auto leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                Join a community of eco-writers sharing tips on sustainable living, climate action, and mindful choices.
+              </p>
+              <div className="flex items-center justify-center gap-3 flex-wrap">
+                <Link href="/register" className="btn-primary">Join BeLife — it's free</Link>
+                <Link href="/blogs" className="btn-secondary">Browse Stories</Link>
+              </div>
+            </div>
+          )}
+          <div className="text-center py-12">
+            <div className="text-4xl mb-3">🌱</div>
+            <h3 className="text-base font-semibold mb-1.5" style={{ color: '#E8F5EC' }}>No stories yet</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
+              Be the first to share an eco story with the community.
+            </p>
+            {user
+              ? <Link href="/blogs/new" className="btn-primary">Write a Story</Link>
+              : <Link href="/register" className="btn-primary">Join & Write</Link>}
+          </div>
         </div>
       ) : (
         <>

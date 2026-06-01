@@ -10,29 +10,47 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import ThemeToggle from '@/components/ThemeToggle';
-import NotificationBell from '@/components/layout/NotificationBell';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
 
 const navItems = [
-  { href: '/',            icon: Home,          label: 'Home' },
-  { href: '/blogs',       icon: Compass,       label: 'Explore' },
-  { href: '/search',      icon: Search,        label: 'Search' },
-  { href: '/thoughts',    icon: Lightbulb,     label: 'Thoughts' },
-  { href: '/categories',  icon: Tag,           label: 'Topics' },
-  { href: '/forum',       icon: Users,         label: 'Forum' },
-  { href: '/groups',      icon: UsersRound,    label: 'Groups' },
-  { href: '/campaigns',   icon: Megaphone,     label: 'Campaigns' },
-  { href: '/challenges',  icon: Trophy,        label: 'Challenges' },
-  { href: '/bookmarks',   icon: Bookmark,      label: 'Saved',     auth: true },
-  { href: '/messages',    icon: MessageCircle, label: 'Messages',  auth: true },
-  { href: '/blogs/new',   icon: PenSquare,     label: 'Write',     auth: true },
-  { href: '/dashboard',   icon: User,          label: 'Profile',   auth: true },
-  { href: '/settings',    icon: Settings,      label: 'Settings',  auth: true },
-];
+  { href: '/',               icon: Home,          label: 'Home' },
+  { href: '/blogs',          icon: Compass,       label: 'Explore' },
+  { href: '/search',         icon: Search,        label: 'Search' },
+  { href: '/thoughts',       icon: Lightbulb,     label: 'Thoughts' },
+  { href: '/categories',     icon: Tag,           label: 'Topics' },
+  { href: '/forum',          icon: Users,         label: 'Forum' },
+  { href: '/groups',         icon: UsersRound,    label: 'Groups' },
+  { href: '/campaigns',      icon: Megaphone,     label: 'Campaigns' },
+  { href: '/challenges',     icon: Trophy,        label: 'Challenges' },
+  { href: '/bookmarks',      icon: Bookmark,      label: 'Saved',          auth: true },
+  { href: '/notifications',  icon: Bell,          label: 'Notifications',  auth: true, badge: 'notifs' },
+  { href: '/messages',       icon: MessageCircle, label: 'Messages',       auth: true, badge: 'msgs' },
+  { href: '/blogs/new',      icon: PenSquare,     label: 'Write',          auth: true },
+  { href: '/dashboard',      icon: User,          label: 'Profile',        auth: true },
+  { href: '/settings',       icon: Settings,      label: 'Settings',       auth: true },
+] as const;
 
 export default function SideNav() {
   const pathname = usePathname();
   const router   = useRouter();
   const { user, logout } = useAuthStore();
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [unreadMsgs,   setUnreadMsgs]   = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchCounts = () => {
+      api.get('/notifications/unread-count').then(r => setUnreadNotifs((r.data as any).count || 0)).catch(() => {});
+      api.get('/messages').then(r => {
+        const convs = r.data as { lastMessage?: { isRead: boolean; isMine: boolean } }[];
+        setUnreadMsgs(convs.filter(c => c.lastMessage && !c.lastMessage.isRead && !c.lastMessage.isMine).length);
+      }).catch(() => {});
+    };
+    fetchCounts();
+    const t = setInterval(fetchCounts, 30_000);
+    return () => clearInterval(t);
+  }, [user]);
 
   return (
     <nav
@@ -46,9 +64,12 @@ export default function SideNav() {
 
       {/* Nav links */}
       <div className="flex-1 flex flex-col gap-0.5 overflow-y-auto no-scrollbar">
-        {navItems.map(({ href, icon: Icon, label, auth }) => {
+        {navItems.map(({ href, icon: Icon, label, ...rest }) => {
+          const auth  = (rest as any).auth;
+          const badge = (rest as any).badge as 'notifs' | 'msgs' | undefined;
           if (auth && !user) return null;
           const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+          const count  = badge === 'notifs' ? unreadNotifs : badge === 'msgs' ? unreadMsgs : 0;
           return (
             <Link
               key={href}
@@ -64,11 +85,21 @@ export default function SideNav() {
                 style={{ background: active ? undefined : 'var(--bg-hover)' }}
                 aria-hidden
               />
-              <Icon
-                className="w-5 h-5 relative z-10 transition-colors duration-200"
-                style={{ color: active ? 'var(--eco-bright)' : undefined }}
-                strokeWidth={active ? 2.2 : 1.6}
-              />
+              <span className="relative z-10">
+                <Icon
+                  className="w-5 h-5 transition-colors duration-200"
+                  style={{ color: active ? 'var(--eco-bright)' : undefined }}
+                  strokeWidth={active ? 2.2 : 1.6}
+                />
+                {count > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 rounded-full text-[8px] font-bold flex items-center justify-center"
+                    style={{ background: '#22C55E', color: '#050C07' }}
+                  >
+                    {count > 9 ? '9+' : count}
+                  </span>
+                )}
+              </span>
               <span
                 className="text-sm font-medium relative z-10 transition-colors duration-200 group-hover:text-[var(--text)]"
                 style={{ color: active ? 'var(--eco-bright)' : undefined }}
@@ -85,16 +116,6 @@ export default function SideNav() {
           );
         })}
       </div>
-
-      {/* Notification bell */}
-      {user && (
-        <div className="px-3 py-2 mt-1">
-          <div className="flex items-center gap-3">
-            <NotificationBell />
-            <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Notifications</span>
-          </div>
-        </div>
-      )}
 
       {/* Theme toggle */}
       <div className="mt-2 mb-2 px-1">
