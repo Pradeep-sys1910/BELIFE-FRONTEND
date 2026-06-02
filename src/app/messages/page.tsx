@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Send, Lock, ArrowLeft, SquarePen, X } from 'lucide-react';
+import { Send, Lock, ArrowLeft, SquarePen, X, Check, CheckCheck, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -109,7 +109,16 @@ function MessagesContent() {
           : c);
       });
     });
-    return () => { sock.off('new_message'); };
+
+    // Live read receipts: flip our outgoing bubbles to "read" when the other side opens the chat.
+    sock.on('messages_read', ({ readerId }: { readerId: string }) => {
+      setActive(prev => {
+        if (!prev || prev.conv.other.id !== readerId) return prev;
+        return { ...prev, messages: prev.messages.map(m => m.senderId === readerId ? m : { ...m, isRead: true }) };
+      });
+    });
+
+    return () => { sock.off('new_message'); sock.off('messages_read'); };
   }, [user]);
 
   // Safety-net poll: even if the socket drops (mobile networks, sleeping dyno),
@@ -317,12 +326,22 @@ function MessagesContent() {
                       opacity: msg.status === 'sending' ? 0.6 : 1,
                     }}>
                     {msg.content}
-                    <p className="text-[10px] mt-1"
-                      style={{ color: msg.status === 'failed' ? '#F87171' : mine ? 'rgba(5,12,7,0.6)' : 'var(--text-faint)' }}>
-                      {msg.status === 'sending' ? 'Sending…'
-                        : msg.status === 'failed' ? 'Failed to send — check connection'
-                        : formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
-                    </p>
+                    <div className="flex items-center gap-1 mt-1"
+                      style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
+                      <span className="text-[10px]"
+                        style={{ color: msg.status === 'failed' ? '#F87171' : mine ? 'rgba(5,12,7,0.6)' : 'var(--text-faint)' }}>
+                        {msg.status === 'sending' ? 'Sending…'
+                          : msg.status === 'failed' ? 'Failed to send — check connection'
+                          : formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
+                      </span>
+                      {mine && msg.status !== 'failed' && (
+                        msg.status === 'sending'
+                          ? <Clock className="w-3 h-3" style={{ color: 'rgba(5,12,7,0.55)' }} />
+                          : msg.isRead
+                            ? <CheckCheck className="w-3.5 h-3.5" style={{ color: '#E8F5EC' }} aria-label="Read" />
+                            : <Check className="w-3.5 h-3.5" style={{ color: 'rgba(5,12,7,0.55)' }} aria-label="Sent" />
+                      )}
+                    </div>
                   </div>
                 </div>
               );
