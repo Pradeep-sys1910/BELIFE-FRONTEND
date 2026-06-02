@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <div className="mb-10">
         <Link href="/" className="text-sm font-medium hover:underline" style={{ color: 'var(--eco-bright)' }}>← Back to BeLife</Link>
         <h1 className="text-4xl font-serif font-bold mt-4 mb-2" style={{ color: 'var(--text)' }}>Privacy Policy</h1>
-        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Last updated: May 21, 2026 · Effective immediately</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Last updated: June 2, 2026 · Effective immediately</p>
       </div>
 
       <div className="max-w-none space-y-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>

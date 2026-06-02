@@ -40,12 +40,14 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
     setUploading(true);
     setProgress(0);
 
+    let reservedKey: string | null = null;
     try {
-      // Step 1: Get presigned URL from backend
+      // Step 1: Get presigned URL from backend (this reserves storage quota)
       const { data } = await api.post('/upload/presign', {
         mimeType: file.type,
         fileSize: file.size,
       });
+      reservedKey = data.key;
 
       // Step 2: Upload directly to R2
       await new Promise<void>((resolve, reject) => {
@@ -60,9 +62,14 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
         xhr.send(file);
       });
 
+      reservedKey = null; // upload succeeded — keep the reserved quota
       onUpload(data.publicUrl);
       toast.success('Uploaded successfully! 🌿');
     } catch (err: any) {
+      // Release the reserved storage quota if the upload never completed
+      if (reservedKey) {
+        api.post('/upload/release', { key: reservedKey, fileSize: file.size }).catch(() => {});
+      }
       toast.error(err.response?.data?.message || 'Upload failed. Try again.');
     } finally {
       setUploading(false);
@@ -87,17 +94,28 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => !uploading && inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
-          uploading ? 'border-forest-400 bg-forest-50 cursor-wait' : 'border-cream-300 hover:border-forest-400 hover:bg-cream-50'
-        }`}
+        className="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
+        style={{
+          borderColor: uploading ? 'var(--border-eco)' : 'var(--input-border)',
+          background:  uploading ? 'var(--eco-dim)' : 'var(--input-bg)',
+          cursor:      uploading ? 'wait' : 'pointer',
+        }}
+        onMouseEnter={(e) => { if (!uploading) {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-eco)';
+          (e.currentTarget as HTMLElement).style.background  = 'var(--bg-hover)';
+        }}}
+        onMouseLeave={(e) => { if (!uploading) {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--input-border)';
+          (e.currentTarget as HTMLElement).style.background  = 'var(--input-bg)';
+        }}}
       >
         <input ref={inputRef} type="file" accept={acceptAttr} onChange={handleChange} className="hidden" />
 
         {uploading ? (
           <div>
-            <p className="text-forest-600 text-sm mb-3">Uploading... {progress}%</p>
-            <div className="w-full bg-cream-200 rounded-full h-2">
-              <div className="bg-forest-600 h-2 rounded-full transition-all" style={{ width: `${progress}%` }} />
+            <p className="text-sm mb-3" style={{ color: 'var(--eco-bright)' }}>Uploading... {progress}%</p>
+            <div className="w-full rounded-full h-2" style={{ background: 'var(--bg-elevated)' }}>
+              <div className="h-2 rounded-full transition-all" style={{ width: `${progress}%`, background: 'var(--eco)' }} />
             </div>
           </div>
         ) : currentUrl ? (
@@ -107,18 +125,18 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
             ) : (
               <img src={currentUrl} alt="Preview" className="max-h-40 mx-auto rounded-lg mb-2 object-cover" />
             )}
-            <p className="text-forest-500 text-xs">Click or drag to replace</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Click or drag to replace</p>
           </div>
         ) : (
           <div>
             <div className="text-3xl mb-2">📁</div>
-            <p className="text-forest-700 text-sm font-medium">{label}</p>
-            <p className="text-forest-400 text-xs mt-1">
+            <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
               {accept === 'image' && 'Images up to 10MB (JPEG, PNG, WebP, GIF)'}
               {accept === 'video' && 'Videos up to 60MB (MP4, WebM, MOV)'}
               {accept === 'both' && 'Images up to 10MB · Videos up to 60MB'}
             </p>
-            <p className="text-forest-400 text-xs">Click or drag & drop</p>
+            <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Click or drag &amp; drop</p>
           </div>
         )}
       </div>
