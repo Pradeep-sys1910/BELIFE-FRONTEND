@@ -10,12 +10,12 @@ export default function CookiesPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <div className="mb-10">
-        <Link href="/" className="text-sm text-forest-600 hover:underline">← Back to BeLife</Link>
-        <h1 className="text-4xl font-serif font-bold text-gray-900 mt-4 mb-2">Cookie Policy</h1>
-        <p className="text-sm text-gray-500">Last updated: May 21, 2026 · Effective immediately</p>
+        <Link href="/" className="text-sm font-medium hover:underline" style={{ color: 'var(--eco-bright)' }}>← Back to BeLife</Link>
+        <h1 className="text-4xl font-serif font-bold mt-4 mb-2" style={{ color: 'var(--text)' }}>Cookie Policy</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Last updated: May 21, 2026 · Effective immediately</p>
       </div>
 
-      <div className="prose prose-gray max-w-none space-y-8 text-gray-700 leading-relaxed">
+      <div className="max-w-none space-y-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
 
         <section>
           <p>
@@ -26,7 +26,7 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">1. What Are Cookies?</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>1. What Are Cookies?</h2>
           <p>
             Cookies are small text files stored on your device when you visit a website. They help
             the website remember information about your visit — like whether you're logged in —
@@ -35,7 +35,7 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">2. How We Use Cookies</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>2. How We Use Cookies</h2>
           <p>BeLife uses cookies strictly for functional purposes:</p>
           <ul className="list-disc pl-5 mt-2 space-y-2">
             <li>
@@ -55,7 +55,7 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Third-Party Cookies</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>3. Third-Party Cookies</h2>
           <p>
             BeLife does not directly set third-party tracking cookies. However, our infrastructure
             providers (Vercel, Cloudflare) may set their own cookies for security and performance
@@ -64,7 +64,7 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Managing Cookies</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>4. Managing Cookies</h2>
           <p>
             You can control cookies through your browser settings. Most browsers allow you to:
           </p>
@@ -81,7 +81,7 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Data We Do Not Collect</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>5. Data We Do Not Collect</h2>
           <p>
             We do <strong>not</strong> use cookies to:
           </p>
@@ -94,10 +94,10 @@ export default function CookiesPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>6. Contact</h2>
           <p>
             If you have questions about our use of cookies, contact us at{' '}
-            <a href="mailto:support@belife.site" className="text-forest-600 hover:underline">
+            <a href="mailto:support@belife.site" className="hover:underline" style={{ color: 'var(--eco-bright)' }}>
               support@belife.site
             </a>.
           </p>
@@ -105,10 +105,10 @@ export default function CookiesPage() {
 
       </div>
 
-      <div className="mt-12 pt-8 border-t border-gray-200 flex gap-6 text-sm text-gray-500">
-        <Link href="/privacy" className="hover:text-forest-600 transition">Privacy Policy</Link>
-        <Link href="/terms" className="hover:text-forest-600 transition">Terms of Service</Link>
-        <Link href="/" className="hover:text-forest-600 transition">Back to Home</Link>
+      <div className="mt-12 pt-8 flex gap-6 text-sm" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-faint)' }}>
+        <Link href="/privacy" className="hover:underline transition">Privacy Policy</Link>
+        <Link href="/terms" className="hover:underline transition">Terms of Service</Link>
+        <Link href="/" className="hover:underline transition">Back to Home</Link>
       </div>
     </div>
   );

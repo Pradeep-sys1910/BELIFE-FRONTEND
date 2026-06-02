@@ -10,12 +10,12 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
       <div className="mb-10">
-        <Link href="/" className="text-sm text-forest-600 hover:underline">← Back to BeLife</Link>
-        <h1 className="text-4xl font-serif font-bold text-gray-900 mt-4 mb-2">Privacy Policy</h1>
-        <p className="text-sm text-gray-500">Last updated: May 21, 2026 · Effective immediately</p>
+        <Link href="/" className="text-sm font-medium hover:underline" style={{ color: 'var(--eco-bright)' }}>← Back to BeLife</Link>
+        <h1 className="text-4xl font-serif font-bold mt-4 mb-2" style={{ color: 'var(--text)' }}>Privacy Policy</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Last updated: May 21, 2026 · Effective immediately</p>
       </div>
 
-      <div className="prose prose-gray max-w-none space-y-8 text-gray-700 leading-relaxed">
+      <div className="max-w-none space-y-8 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
 
         <section>
           <p>
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Information We Collect</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>1. Information We Collect</h2>
           <p><strong>Information you provide directly:</strong></p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
             <li>Name, username, email address, and password when you register</li>
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">2. How We Use Your Information</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>2. How We Use Your Information</h2>
           <p>We use the information we collect to:</p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
             <li>Create and manage your account</li>
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">3. User Content & Public Information</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>3. User Content & Public Information</h2>
           <p>
             Blog posts, comments, and profile information you choose to make public on BeLife are visible
             to all visitors of the Platform. Please exercise caution about what personal information you
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Sharing of Information</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>4. Sharing of Information</h2>
           <p>
             <strong>We do not sell, rent, or trade your personal information to third parties.</strong>
           </p>
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Data Retention</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>5. Data Retention</h2>
           <p>
             We retain your personal data for as long as your account is active or as necessary to provide
             services. If you delete your account, we will delete or anonymise your personal data within a
@@ -105,7 +105,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Data Security</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>6. Data Security</h2>
           <p>
             We implement industry-standard security measures including password hashing (bcrypt), JWT
             authentication, HTTPS encryption, and access controls to protect your personal information.
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Cookies</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>7. Cookies</h2>
           <p>
             We use cookies and similar tracking technologies to maintain your session and improve your
             experience. We use an authentication token stored in your browser to keep you logged in. You
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Children's Privacy</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>8. Children's Privacy</h2>
           <p>
             BeLife is not directed to children under the age of 13. We do not knowingly collect personal
             information from children under 13. If we discover that a child under 13 has provided us with
@@ -136,7 +136,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Your Rights</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>9. Your Rights</h2>
           <p>Depending on your jurisdiction, you may have the right to:</p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
             <li>Access the personal data we hold about you</li>
@@ -148,13 +148,13 @@ export default function PrivacyPage() {
           </ul>
           <p className="mt-3">
             To exercise any of these rights, contact us at{' '}
-            <a href="mailto:support@belife.site" className="text-forest-600 hover:underline">support@belife.site</a>.
+            <a href="mailto:support@belife.site" className="hover:underline" style={{ color: 'var(--eco-bright)' }}>support@belife.site</a>.
             We will respond within 30 days.
           </p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Disclaimer of Liability for User Content</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>10. Disclaimer of Liability for User Content</h2>
           <p>
             BeLife is a user-generated content platform. We do not review, verify, or endorse any content
             posted by users. <strong>We are not responsible or liable for any user content, including any
@@ -164,7 +164,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">11. Third-Party Links</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>11. Third-Party Links</h2>
           <p>
             The Platform may contain links to external websites. We have no control over and are not
             responsible for the privacy practices or content of those sites. We encourage you to review
@@ -173,7 +173,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Governing Law</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>12. Governing Law</h2>
           <p>
             This Privacy Policy is governed by the laws of India. Any disputes relating to this policy
             shall be subject to the exclusive jurisdiction of courts in India.
@@ -181,22 +181,22 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">13. Contact Us</h2>
+          <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--text)' }}>13. Contact Us</h2>
           <p>
             If you have any questions, concerns, or requests regarding this Privacy Policy, please contact us at:
           </p>
-          <div className="mt-3 p-4 bg-forest-50 rounded-lg border border-forest-100">
-            <p className="font-medium text-gray-900">BeLife</p>
-            <p>Email: <a href="mailto:support@belife.site" className="text-forest-600 hover:underline">support@belife.site</a></p>
-            <p>Website: <a href="https://www.belife.site" className="text-forest-600 hover:underline">www.belife.site</a></p>
+          <div className="mt-3 p-4 rounded-lg" style={{ background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
+            <p className="font-medium" style={{ color: 'var(--text)' }}>BeLife</p>
+            <p>Email: <a href="mailto:support@belife.site" className="hover:underline" style={{ color: 'var(--eco-bright)' }}>support@belife.site</a></p>
+            <p>Website: <a href="https://www.belife.site" className="hover:underline" style={{ color: 'var(--eco-bright)' }}>www.belife.site</a></p>
           </div>
         </section>
 
       </div>
 
-      <div className="mt-12 pt-8 border-t border-gray-200 flex gap-6 text-sm text-gray-500">
-        <Link href="/terms" className="hover:text-forest-600 transition">Terms of Service</Link>
-        <Link href="/" className="hover:text-forest-600 transition">Back to Home</Link>
+      <div className="mt-12 pt-8 flex gap-6 text-sm" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-faint)' }}>
+        <Link href="/terms" className="hover:underline transition">Terms of Service</Link>
+        <Link href="/" className="hover:underline transition">Back to Home</Link>
       </div>
     </div>
   );

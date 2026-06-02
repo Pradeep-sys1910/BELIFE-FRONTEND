@@ -94,9 +94,9 @@ export default function BookmarksPage() {
                     </div>
                     <button onClick={() => removeBookmark(blog.id)}
                       className="p-1.5 rounded-full transition-colors"
-                      style={{ color: '#4ADE80' }}
+                      style={{ color: 'var(--eco)' }}
                       title="Remove bookmark">
-                      <Bookmark className="w-4 h-4" style={{ fill: '#4ADE80' }} strokeWidth={0} />
+                      <Bookmark className="w-4 h-4" style={{ fill: 'var(--eco)' }} strokeWidth={0} />
                     </button>
                   </div>
                 </div>

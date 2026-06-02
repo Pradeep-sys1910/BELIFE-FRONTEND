@@ -13,54 +13,45 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     api.get(`/auth/verify-email/${token}`)
-      .then(() => {
-        setStatus('success');
-        setTimeout(() => router.push('/login'), 3000);
-      })
+      .then(() => { setStatus('success'); setTimeout(() => router.push('/login'), 3000); })
       .catch(() => setStatus('error'));
   }, [token]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-white">
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--bg)' }}>
       <div className="w-full max-w-sm text-center">
         <Link href="/" className="inline-flex items-center gap-2 mb-10">
-          <Leaf className="w-6 h-6 text-forest-600" />
-          <span className="text-xl font-serif font-bold text-forest-700">BeLife</span>
+          <Leaf className="w-6 h-6" style={{ color: 'var(--eco)' }} />
+          <span className="text-xl font-serif font-bold" style={{ color: 'var(--eco-bright)' }}>BeLife</span>
         </Link>
 
         {status === 'loading' && (
           <>
-            <Loader2 className="w-12 h-12 text-forest-600 animate-spin mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">Verifying your email</h1>
-            <p className="text-sm text-gray-500">Please wait a moment...</p>
+            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: 'var(--eco)' }} />
+            <h1 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>Verifying your email</h1>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Please wait a moment...</p>
           </>
         )}
 
         {status === 'success' && (
           <>
-            <CheckCircle2 className="w-14 h-14 text-forest-600 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">Email verified</h1>
-            <p className="text-sm text-gray-500 mb-6">
+            <CheckCircle2 className="w-14 h-14 mx-auto mb-4" style={{ color: 'var(--eco)' }} />
+            <h1 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>Email verified</h1>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
               Your account is now active. Redirecting you to sign in...
             </p>
-            <Link href="/login"
-              className="inline-block bg-forest-600 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-forest-700 transition">
-              Sign in now
-            </Link>
+            <Link href="/login" className="btn-primary inline-flex">Sign in now</Link>
           </>
         )}
 
         {status === 'error' && (
           <>
-            <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">Link invalid or expired</h1>
-            <p className="text-sm text-gray-500 mb-6">
+            <XCircle className="w-14 h-14 text-red-400 mx-auto mb-4" />
+            <h1 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>Link invalid or expired</h1>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
               The verification link has expired or already been used. Sign in to request a new one.
             </p>
-            <Link href="/login"
-              className="inline-block bg-forest-600 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-forest-700 transition">
-              Back to sign in
-            </Link>
+            <Link href="/login" className="btn-primary inline-flex">Back to sign in</Link>
           </>
         )}
       </div>

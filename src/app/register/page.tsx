@@ -28,7 +28,7 @@ function Field({
         {label}
       </label>
       {children}
-      {hint && <p className="text-xs mt-1.5" style={{ color: '#2E4A35' }}>{hint}</p>}
+      {hint && <p className="text-xs mt-1.5" style={{ color: 'var(--text-faint)' }}>{hint}</p>}
     </div>
   );
 }
@@ -44,7 +44,7 @@ function Input({
   return (
     <div className="relative">
       {prefix && (
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm select-none" style={{ color: '#3A5640' }}>
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm select-none" style={{ color: 'var(--text-muted)' }}>
           {prefix}
         </span>
       )}

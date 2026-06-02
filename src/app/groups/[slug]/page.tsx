@@ -31,21 +31,22 @@ interface Group {
   posts: GroupPost[];
 }
 
-const CAT_META: Record<string, { label: string; emoji: string; color: string }> = {
-  GENERAL:           { label: 'General',          emoji: '💬', color: 'bg-gray-100 text-gray-600' },
-  QUESTIONS:         { label: 'Questions',         emoji: '❓', color: 'bg-blue-50 text-blue-600' },
-  ZERO_WASTE:        { label: 'Zero Waste',        emoji: '♻️', color: 'bg-emerald-50 text-emerald-700' },
-  CLIMATE:           { label: 'Climate',           emoji: '🌡️', color: 'bg-orange-50 text-orange-700' },
-  PLANT_BASED:       { label: 'Plant-Based',       emoji: '🌱', color: 'bg-green-50 text-green-700' },
-  ACTIVISM:          { label: 'Activism',          emoji: '✊', color: 'bg-purple-50 text-purple-700' },
-  SUSTAINABLE_LIVING:{ label: 'Sustainable Living',emoji: '🏡', color: 'bg-forest-50 text-forest-700' },
+const CAT_META: Record<string, { label: string; emoji: string }> = {
+  GENERAL:            { label: 'General',           emoji: '💬' },
+  QUESTIONS:          { label: 'Questions',          emoji: '❓' },
+  ZERO_WASTE:         { label: 'Zero Waste',         emoji: '♻️' },
+  CLIMATE:            { label: 'Climate',            emoji: '🌡️' },
+  PLANT_BASED:        { label: 'Plant-Based',        emoji: '🌱' },
+  ACTIVISM:           { label: 'Activism',           emoji: '✊' },
+  SUSTAINABLE_LIVING: { label: 'Sustainable Living', emoji: '🏡' },
 };
 
 function UserAvatar({ name, avatar, size = 36 }: { name: string; avatar?: string; size?: number }) {
   const s = { width: size, height: size, borderRadius: '50%' };
   if (avatar) return <img src={avatar} alt={name} style={{ ...s, objectFit: 'cover', flexShrink: 0 }} />;
   return (
-    <div style={{ ...s, flexShrink: 0 }} className="bg-gradient-to-tr from-forest-400 to-forest-700 flex items-center justify-center text-white font-bold text-sm">
+    <div style={{ ...s, flexShrink: 0, background: 'linear-gradient(135deg,#22C55E,#0F4C25)' }}
+      className="flex items-center justify-center text-white font-bold text-sm">
       {name[0].toUpperCase()}
     </div>
   );
@@ -60,7 +61,6 @@ export default function GroupDetailPage() {
   const [posts, setPosts] = useState<GroupPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
-  const [memberRole, setMemberRole] = useState<string | null>(null);
   const [memberCount, setMemberCount] = useState(0);
   const [joining, setJoining] = useState(false);
   const [postContent, setPostContent] = useState('');
@@ -85,17 +85,11 @@ export default function GroupDetailPage() {
     try {
       const { data } = await api.get(`/groups/${groupId}/membership`);
       setIsMember(data.isMember);
-      setMemberRole(data.role);
     } catch {}
   }, [user]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  useEffect(() => {
-    if (group) loadMembership(group.id);
-  }, [group, loadMembership]);
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (group) loadMembership(group.id); }, [group, loadMembership]);
 
   const handleJoin = async () => {
     if (!user) { router.push('/login'); return; }
@@ -119,8 +113,7 @@ export default function GroupDetailPage() {
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !group) return;
-    if (!postContent.trim()) return;
+    if (!user || !group || !postContent.trim()) return;
     setSubmitting(true);
     try {
       const { data } = await api.post(`/groups/${group.id}/posts`, { content: postContent.trim() });
@@ -182,8 +175,10 @@ export default function GroupDetailPage() {
   if (!group) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center flex-col gap-4">
-        <p className="text-gray-500 text-sm">Group not found</p>
-        <Link href="/groups" className="text-forest-700 text-sm font-semibold hover:underline">← Back to Groups</Link>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Group not found</p>
+        <Link href="/groups" className="text-sm font-semibold hover:underline" style={{ color: 'var(--eco-bright)' }}>
+          ← Back to Groups
+        </Link>
       </div>
     );
   }
@@ -196,28 +191,36 @@ export default function GroupDetailPage() {
 
       {/* Back */}
       <button onClick={() => router.back()}
-        className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition mb-6">
+        className="flex items-center gap-1.5 text-sm mb-6 transition-colors"
+        style={{ color: 'var(--text-faint)' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}>
         <ArrowLeft className="w-4 h-4" /> Groups
       </button>
 
       {/* Group header */}
-      <div className="border border-gray-100 rounded-2xl p-6 mb-6 shadow-card">
+      <div className="rounded-2xl p-6 mb-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-forest-100 to-forest-200 flex items-center justify-center text-3xl shrink-0">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+              style={{ background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
               {group.image
                 ? <img src={group.image} alt={group.name} className="w-full h-full rounded-2xl object-cover" />
                 : cat?.emoji}
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-semibold text-gray-900">{group.name}</h1>
+                <h1 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>{group.name}</h1>
                 {group.privacy === 'PRIVATE' && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">🔒 Private</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                    style={{ background: 'var(--bg-elevated)', color: 'var(--text-faint)' }}>
+                    🔒 Private
+                  </span>
                 )}
               </div>
               {cat && (
-                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${cat.color}`}>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}>
                   {cat.emoji} {cat.label}
                 </span>
               )}
@@ -226,20 +229,22 @@ export default function GroupDetailPage() {
 
           {user?.id !== group.creator.id && (
             <button onClick={handleJoin} disabled={joining}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all duration-200 shrink-0
-                ${isMember
-                  ? 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-500 hover:bg-red-50'
-                  : 'bg-forest-800 text-white border-forest-800 hover:bg-forest-900'}`}>
+              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0"
+              style={isMember
+                ? { border: '1px solid var(--border)', color: 'var(--text-muted)', background: 'transparent' }
+                : { background: 'var(--eco)', color: '#050C07', border: '1px solid transparent' }}>
               {joining ? '…' : isMember ? 'Leave' : 'Join'}
             </button>
           )}
         </div>
 
         {group.description && (
-          <p className="text-sm text-gray-600 leading-relaxed mt-4">{group.description}</p>
+          <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--text-muted)' }}>
+            {group.description}
+          </p>
         )}
 
-        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+        <div className="flex items-center gap-4 mt-4 pt-4 text-xs" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-faint)' }}>
           <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" />{memberCount} members</span>
           <span>{group._count.posts} posts</span>
           <span>Created {formatDistanceToNow(new Date(group.createdAt), { addSuffix: true })}</span>
@@ -257,22 +262,38 @@ export default function GroupDetailPage() {
                 placeholder={`Share something with ${group.name}…`}
                 value={postContent}
                 onChange={e => setPostContent(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-forest-500/30 focus:border-forest-400 focus:bg-white transition-all duration-200 resize-none pr-12"
+                className="w-full px-4 py-3 rounded-xl text-sm resize-none pr-12 transition-all duration-200 focus:outline-none"
+                style={{
+                  background: 'var(--input-bg)',
+                  border: '1px solid var(--input-border)',
+                  color: 'var(--text)',
+                }}
+                onFocus={e => {
+                  e.currentTarget.style.borderColor = 'rgba(74,222,128,0.4)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(34,197,94,0.08)';
+                }}
+                onBlur={e => {
+                  e.currentTarget.style.borderColor = 'var(--input-border)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
               <button type="submit" disabled={submitting || !postContent.trim()}
-                className="absolute right-3 bottom-3 p-1.5 rounded-lg bg-forest-800 hover:bg-forest-900 text-white disabled:opacity-40 transition-all active:scale-95">
+                className="absolute right-3 bottom-3 p-1.5 rounded-lg text-[#050C07] disabled:opacity-40 transition-all active:scale-95"
+                style={{ background: 'var(--eco)' }}>
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </form>
       ) : !user ? (
-        <div className="bg-forest-50 border border-forest-100 rounded-xl px-5 py-4 text-sm text-center mb-6">
-          <Link href="/login" className="text-forest-700 font-semibold hover:underline">Sign in</Link>
-          <span className="text-gray-500"> and join to post</span>
+        <div className="rounded-xl px-5 py-4 text-sm text-center mb-6"
+          style={{ background: 'var(--eco-dim)', border: '1px solid var(--border-eco)' }}>
+          <Link href="/login" className="font-semibold hover:underline" style={{ color: 'var(--eco-bright)' }}>Sign in</Link>
+          <span style={{ color: 'var(--text-muted)' }}> and join to post</span>
         </div>
       ) : (
-        <div className="bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 text-sm text-center mb-6 text-gray-500">
+        <div className="rounded-xl px-5 py-4 text-sm text-center mb-6"
+          style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
           Join this group to post
         </div>
       )}
@@ -280,22 +301,25 @@ export default function GroupDetailPage() {
       {/* Posts */}
       <div className="space-y-3">
         {posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
+          <div className="text-center py-12 text-sm" style={{ color: 'var(--text-faint)' }}>
             No posts yet. {canPost ? 'Be the first to post!' : 'Join to start posting.'}
           </div>
         ) : posts.map(post => (
-          <div key={post.id} className="border border-gray-100 rounded-2xl p-5 shadow-card">
+          <div key={post.id} className="rounded-2xl p-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
             <div className="flex items-start gap-3 mb-3">
               <UserAvatar name={post.author.name} avatar={post.author.avatar} size={36} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-gray-900">{post.author.name}</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{post.author.name}</p>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
                       {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                     </span>
                     {user?.id === post.author.id && (
-                      <button onClick={() => handleDeletePost(post.id)} className="text-gray-300 hover:text-red-400 transition">
+                      <button onClick={() => handleDeletePost(post.id)} className="transition-colors"
+                        style={{ color: 'var(--text-faint)' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#F87171')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-faint)')}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -304,12 +328,15 @@ export default function GroupDetailPage() {
               </div>
             </div>
 
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line mb-3">{post.content}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line mb-3" style={{ color: 'var(--text-muted)' }}>
+              {post.content}
+            </p>
 
             <button onClick={() => handleLike(post)}
-              className={`flex items-center gap-1.5 text-xs font-semibold transition-all
-                ${likedPosts.has(post.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}>
-              <Heart className={`w-4 h-4 ${likedPosts.has(post.id) ? 'fill-red-500' : ''}`} strokeWidth={likedPosts.has(post.id) ? 0 : 1.8} />
+              className="flex items-center gap-1.5 text-xs font-semibold transition-all"
+              style={{ color: likedPosts.has(post.id) ? '#F87171' : 'var(--text-faint)' }}>
+              <Heart className="w-4 h-4" style={{ fill: likedPosts.has(post.id) ? '#F87171' : 'none' }}
+                strokeWidth={likedPosts.has(post.id) ? 0 : 1.8} />
               {post._count.likes + (likedPosts.has(post.id) ? 1 : 0)}
             </button>
           </div>

@@ -24,7 +24,7 @@ const FACTS = [
 
 const inputCls = `
   w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none
-  placeholder:text-[#2E4A35] text-[#DFF0E3]
+  placeholder:text-[var(--text-faint)] text-[var(--text)]
 `;
 const inputStyle: React.CSSProperties = {
   background: 'var(--input-bg)',

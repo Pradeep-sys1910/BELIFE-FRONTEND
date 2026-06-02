@@ -30,26 +30,26 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10">
+    <div className="min-h-screen flex items-center justify-center p-6" style={{ background: 'var(--bg)' }}>
+      <div className="max-w-md w-full rounded-3xl p-10" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-          <Leaf className="w-8 h-8 text-forest-600" />
-          <span className="text-3xl font-serif font-bold text-forest-700">BeLife</span>
+          <Leaf className="w-8 h-8" style={{ color: 'var(--eco)' }} />
+          <span className="text-3xl font-serif font-bold" style={{ color: 'var(--eco-bright)' }}>BeLife</span>
         </Link>
-        <h1 className="font-serif text-3xl text-forest-700 mb-6 text-center">Reset Password</h1>
+        <h1 className="font-serif text-3xl mb-6 text-center" style={{ color: 'var(--text)' }}>Reset Password</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative">
-            <Lock className="absolute left-4 top-3.5 w-5 h-5 text-forest-400" />
+            <Lock className="absolute left-4 top-3.5 w-5 h-5" style={{ color: 'var(--text-faint)' }} />
             <input type="password" required minLength={8} placeholder="New password"
-              value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-cream-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500" />
+              value={password} onChange={e => setPassword(e.target.value)}
+              className="input pl-12" />
           </div>
           <div className="relative">
-            <Lock className="absolute left-4 top-3.5 w-5 h-5 text-forest-400" />
+            <Lock className="absolute left-4 top-3.5 w-5 h-5" style={{ color: 'var(--text-faint)' }} />
             <input type="password" required placeholder="Confirm password"
-              value={confirm} onChange={(e) => setConfirm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-cream-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500" />
+              value={confirm} onChange={e => setConfirm(e.target.value)}
+              className="input pl-12" />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full justify-center">
             {loading ? 'Resetting...' : 'Reset Password'}
