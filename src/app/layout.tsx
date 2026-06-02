@@ -7,6 +7,7 @@ import SideNav from '@/components/layout/SideNav';
 import BottomNav from '@/components/layout/BottomNav';
 import MobileHeader from '@/components/layout/MobileHeader';
 import RightSidebar from '@/components/layout/RightSidebar';
+import MessageNotifier from '@/components/MessageNotifier';
 import OnboardingGuard from '@/components/OnboardingGuard';
 import './globals.css';
 
@@ -78,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
             <BottomNav />
+            <MessageNotifier />
             <ToasterProvider />
           </OnboardingGuard>
         </ThemeProvider>

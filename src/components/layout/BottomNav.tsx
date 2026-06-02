@@ -41,7 +41,8 @@ export default function BottomNav() {
     };
     fetchCounts();
     const t = setInterval(fetchCounts, 30_000);
-    return () => clearInterval(t);
+    window.addEventListener('belife:unread-refresh', fetchCounts);
+    return () => { clearInterval(t); window.removeEventListener('belife:unread-refresh', fetchCounts); };
   }, [user]);
 
   if (HIDE_ON.some(p => pathname.startsWith(p))) return null;

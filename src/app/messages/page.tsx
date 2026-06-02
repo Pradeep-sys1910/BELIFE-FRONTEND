@@ -91,7 +91,7 @@ function MessagesContent() {
     }).catch(() => {});
 
     const sock = getSocket(token || '');
-    sock.on('new_message', (msg: Message) => {
+    const onNewMessage = (msg: Message) => {
       setActive(prev => {
         if (!prev || prev.conv.other.id !== msg.senderId) return prev;
         if (prev.messages.some(m => m.id === msg.id)) return prev; // dedupe
@@ -108,17 +108,18 @@ function MessagesContent() {
           ? { ...c, lastMessage: { content: msg.content, createdAt: msg.createdAt, isRead: false, isMine: false } }
           : c);
       });
-    });
-
+    };
     // Live read receipts: flip our outgoing bubbles to "read" when the other side opens the chat.
-    sock.on('messages_read', ({ readerId }: { readerId: string }) => {
+    const onMessagesRead = ({ readerId }: { readerId: string }) => {
       setActive(prev => {
         if (!prev || prev.conv.other.id !== readerId) return prev;
         return { ...prev, messages: prev.messages.map(m => m.senderId === readerId ? m : { ...m, isRead: true }) };
       });
-    });
+    };
+    sock.on('new_message', onNewMessage);
+    sock.on('messages_read', onMessagesRead);
 
-    return () => { sock.off('new_message'); sock.off('messages_read'); };
+    return () => { sock.off('new_message', onNewMessage); sock.off('messages_read', onMessagesRead); };
   }, [user]);
 
   // Safety-net poll: even if the socket drops (mobile networks, sleeping dyno),

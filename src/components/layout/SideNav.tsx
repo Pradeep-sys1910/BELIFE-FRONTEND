@@ -49,7 +49,8 @@ export default function SideNav() {
     };
     fetchCounts();
     const t = setInterval(fetchCounts, 30_000);
-    return () => clearInterval(t);
+    window.addEventListener('belife:unread-refresh', fetchCounts);
+    return () => { clearInterval(t); window.removeEventListener('belife:unread-refresh', fetchCounts); };
   }, [user]);
 
   return (
