@@ -37,6 +37,16 @@ function Avatar({ name, avatar, size = 36 }: { name: string; avatar?: string; si
 
 // ── Guest Landing ──────────────────────────────────────────────────────────────
 function GuestLanding() {
+  const [stats, setStats] = useState<{ stories: number; members: number; topics: number } | null>(null);
+
+  useEffect(() => {
+    api.get('/stats')
+      .then(r => setStats(r.data as any))
+      .catch(() => {});
+  }, []);
+
+  const fmt = (n?: number) => (n == null ? '—' : n.toLocaleString());
+
   return (
     <div className="pb-8">
       {/* Hero */}
@@ -82,9 +92,9 @@ function GuestLanding() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3 mb-8 px-1">
         {[
-          { icon: PenLine, label: 'Stories',   value: '500+' },
-          { icon: Users,   label: 'Writers',   value: '200+' },
-          { icon: Globe,   label: 'Topics',    value: '20+' },
+          { icon: PenLine, label: 'Stories', value: fmt(stats?.stories) },
+          { icon: Users,   label: 'Members', value: fmt(stats?.members) },
+          { icon: Globe,   label: 'Topics',  value: fmt(stats?.topics) },
         ].map(({ icon: Icon, label, value }) => (
           <div
             key={label}
@@ -193,7 +203,8 @@ function PostCard({ blog, index }: { blog: Blog; index: number }) {
             </p>
           </div>
         </Link>
-        <button className="p-1 rounded-full transition-colors" style={{ color: 'var(--text-faint)' }}>
+        <button onClick={handleShare} aria-label="Share post"
+          className="p-1 rounded-full transition-colors hover:text-eco-400" style={{ color: 'var(--text-faint)' }}>
           <MoreHorizontal className="w-4 h-4" />
         </button>
       </div>

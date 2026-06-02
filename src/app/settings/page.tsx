@@ -321,24 +321,49 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   );
 }
 
-function NotificationsTab() {
-  const [prefs, setPrefs] = useState({
-    emailLikes: true, emailComments: true, emailFollowers: false, emailWeeklyDigest: true,
-  });
+function PreferenceToggles<T extends Record<string, boolean>>({
+  heading, defaults, items, saveLabel,
+}: {
+  heading: string;
+  defaults: T;
+  items: { key: keyof T; label: string; desc: string }[];
+  saveLabel: string;
+}) {
+  const [prefs, setPrefs] = useState<T>(defaults);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const items = [
-    { key: 'emailLikes'         as const, label: 'Someone likes your story',     desc: 'Receive an email when someone likes your post' },
-    { key: 'emailComments'      as const, label: 'New comment on your story',     desc: 'Receive an email when someone comments' },
-    { key: 'emailFollowers'     as const, label: 'New follower',                  desc: 'Receive an email when someone follows you' },
-    { key: 'emailWeeklyDigest'  as const, label: 'Weekly digest',                 desc: 'A curated weekly summary of top stories' },
-  ];
+  useEffect(() => {
+    api.get('/users/preferences')
+      .then(r => setPrefs(p => {
+        const next = { ...p };
+        for (const k of Object.keys(p) as (keyof T)[]) {
+          if (typeof r.data[k] === 'boolean') (next as any)[k] = r.data[k];
+        }
+        return next;
+      }))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.patch('/users/preferences', prefs);
+      toast.success('Saved');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Could not save. Try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div>
-      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Notification preferences</h2>
-      <div className="space-y-1">
+      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>{heading}</h2>
+      <div className="space-y-1" style={{ opacity: loading ? 0.5 : 1, pointerEvents: loading ? 'none' : 'auto' }}>
         {items.map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between py-3.5"
+          <div key={String(key)} className="flex items-center justify-between py-3.5"
             style={{ borderBottom: '1px solid var(--border)' }}>
             <div>
               <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</p>
@@ -348,46 +373,43 @@ function NotificationsTab() {
           </div>
         ))}
       </div>
-      <button className="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
+      <button className="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
         style={{ background: 'var(--eco)', color: '#050C07' }}
-        onClick={() => toast.success('Preferences saved')}>
-        Save preferences
+        disabled={saving || loading}
+        onClick={save}>
+        {saving ? 'Saving…' : saveLabel}
       </button>
     </div>
   );
 }
 
-function PrivacyTab() {
-  const [prefs, setPrefs] = useState({
-    publicProfile: true, showEmail: false, allowMessages: true,
-  });
-
-  const items = [
-    { key: 'publicProfile'  as const, label: 'Public profile',          desc: 'Anyone can view your profile and stories' },
-    { key: 'showEmail'      as const, label: 'Show email on profile',    desc: 'Your email address will be visible to others' },
-    { key: 'allowMessages'  as const, label: 'Allow direct messages',    desc: 'Let other members send you messages' },
-  ];
-
+function NotificationsTab() {
   return (
-    <div>
-      <h2 className="text-base font-semibold mb-6" style={{ color: 'var(--text)' }}>Privacy settings</h2>
-      <div className="space-y-1">
-        {items.map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between py-3.5"
-            style={{ borderBottom: '1px solid var(--border)' }}>
-            <div>
-              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>{label}</p>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-faint)' }}>{desc}</p>
-            </div>
-            <Toggle on={prefs[key]} onToggle={() => setPrefs(p => ({ ...p, [key]: !p[key] }))} />
-          </div>
-        ))}
-      </div>
-      <button className="mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all"
-        style={{ background: 'var(--eco)', color: '#050C07' }}
-        onClick={() => toast.success('Privacy settings saved')}>
-        Save settings
-      </button>
-    </div>
+    <PreferenceToggles
+      heading="Notification preferences"
+      saveLabel="Save preferences"
+      defaults={{ notifyLikes: true, notifyComments: true, notifyFollowers: true, emailWeeklyDigest: false }}
+      items={[
+        { key: 'notifyLikes',       label: 'Likes on your story',  desc: 'Get notified when someone likes your post' },
+        { key: 'notifyComments',    label: 'Comments on your story', desc: 'Get notified when someone comments' },
+        { key: 'notifyFollowers',   label: 'New followers',        desc: 'Get notified when someone follows you' },
+        { key: 'emailWeeklyDigest', label: 'Weekly email digest',  desc: 'A curated weekly summary by email (when available)' },
+      ]}
+    />
+  );
+}
+
+function PrivacyTab() {
+  return (
+    <PreferenceToggles
+      heading="Privacy settings"
+      saveLabel="Save settings"
+      defaults={{ publicProfile: true, showEmail: false, allowMessages: true }}
+      items={[
+        { key: 'publicProfile', label: 'Public profile',       desc: 'Anyone can view your profile and stories' },
+        { key: 'showEmail',     label: 'Show email on profile', desc: 'Your email address will be visible to others' },
+        { key: 'allowMessages', label: 'Allow direct messages', desc: 'Let other members send you messages' },
+      ]}
+    />
   );
 }

@@ -15,6 +15,7 @@ interface PublicUser {
   username: string;
   bio?: string;
   avatar?: string;
+  email?: string;
   createdAt: string;
   _count: { followers: number; following: number };
 }
@@ -38,6 +39,7 @@ export default function PublicProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [following, setFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
@@ -48,6 +50,7 @@ export default function PublicProfilePage() {
         setUser(r.data.user);
         setBlogs(r.data.blogs);
         setFollowerCount(r.data.user._count.followers);
+        setIsPrivate(!!r.data.private);
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
@@ -155,6 +158,11 @@ export default function PublicProfilePage() {
           {user.bio && (
             <p className="text-sm whitespace-pre-line" style={{ color: 'var(--text-muted)' }}>{user.bio}</p>
           )}
+          {user.email && (
+            <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+              ✉️ <a href={`mailto:${user.email}`} className="hover:underline" style={{ color: 'var(--eco-bright)' }}>{user.email}</a>
+            </p>
+          )}
           <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>
             Member since {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
           </p>
@@ -201,7 +209,13 @@ export default function PublicProfilePage() {
       <div className="mb-6" style={{ borderTop: '1px solid var(--border)' }} />
 
       {/* Posts grid */}
-      {blogs.length === 0 ? (
+      {isPrivate ? (
+        <div className="text-center py-16">
+          <div className="text-4xl mb-3">🔒</div>
+          <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>This profile is private</p>
+          <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{user.name} has chosen to keep their stories private.</p>
+        </div>
+      ) : blogs.length === 0 ? (
         <div className="text-center py-16">
           <div className="text-4xl mb-3">🌱</div>
           <p className="text-sm font-medium" style={{ color: 'var(--text-faint)' }}>No posts yet</p>
