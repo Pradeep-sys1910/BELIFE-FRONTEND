@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -65,6 +65,51 @@ const FACTS = [
   "A single oak tree can support over 2,000 species of wildlife.",
   "Air-drying laundry instead of using a dryer saves about 2 kg of CO₂ per load.",
   "Octopuses, corals, and seagrass all quietly keep our oceans in balance.",
+  "A single bee produces about a twelfth of a teaspoon of honey in its lifetime.",
+  "Tropical rainforests recycle their own rainfall through evaporation.",
+  "Recycling paper uses up to 70% less energy than making it from scratch.",
+  "The world's soils could store an extra billion tonnes of carbon with better farming.",
+  "Dragonflies have existed for over 300 million years.",
+  "A reusable coffee cup pays back its footprint after about 20 uses.",
+  "Tree roots can stretch wider than the canopy above them.",
+  "Around 70% of Earth's fresh water is locked in ice and glaciers.",
+  "Bats can eat thousands of insects in a single night, protecting crops.",
+  "Old-growth forests keep absorbing carbon for centuries.",
+  "Choosing tap over bottled water can cut that footprint by up to 1,000×.",
+  "Moss can survive being completely dried out and then revive with rain.",
+  "Urban trees can lower nearby air temperatures by several degrees.",
+  "A healthy lawn of clover feeds pollinators and needs no fertiliser.",
+  "Seabirds carry nutrients from ocean to land, fertilising whole ecosystems.",
+  "Insulating a home well can cut its heating energy by a third or more.",
+  "Coral polyps are tiny animals related to jellyfish.",
+  "Eating one less beef meal a week meaningfully cuts your yearly emissions.",
+  "Rivers carry nutrients that keep coastal fisheries alive.",
+  "A mature beech tree can release hundreds of litres of water vapour a day.",
+  "Recycling steel saves 74% of the energy needed to make it new.",
+  "Some seeds can stay dormant in soil for decades, waiting for the right moment.",
+  "Wolves reshaped entire valleys in Yellowstone just by returning.",
+  "Carpooling with one other person halves your commute's carbon.",
+  "Phytoplankton in the ocean produce roughly half of Earth's oxygen.",
+  "A leaky toilet can quietly waste hundreds of litres of water a day.",
+  "Lichens are a partnership between a fungus and an alga.",
+  "Buying local, seasonal food cuts the emissions of long-distance transport.",
+  "Termites recycle dead wood and enrich soil across the tropics.",
+  "Switching one flight to a train can cut that trip's emissions by up to 90%.",
+  "Snow reflects sunlight, helping keep the planet cool.",
+  "A single cow pat can support dozens of insect species.",
+  "Repairing instead of replacing electronics avoids hard-to-recycle e-waste.",
+  "Frogs breathe partly through their skin, making them sensitive to pollution.",
+  "Hedgerows act as wildlife highways across farmland.",
+  "Unplugging chargers when idle trims a small but steady energy drain.",
+  "Deep-sea ecosystems thrive with no sunlight at all.",
+  "A cast-iron pan, cared for, can last over a hundred years.",
+  "Owls' silent flight comes from the comb-like edges of their feathers.",
+  "Rooftop gardens cool buildings and soak up rainwater.",
+  "Soil bacteria can break down many pollutants naturally.",
+  "Choosing a refurbished phone cuts most of a new one's carbon footprint.",
+  "Tardigrades can survive the vacuum of space.",
+  "Native plants need far less water than exotic ornamentals.",
+  "A single mature kelp plant shelters hundreds of marine creatures.",
 ];
 
 const inputCls = `
@@ -116,7 +161,21 @@ export default function LoginPage() {
   const [loading,    setLoading]    = useState(false);
   const [unverified, setUnverified] = useState(false);
   const [resending,  setResending]  = useState(false);
-  const [fact]  = useState(() => FACTS[Math.floor(Math.random() * FACTS.length)]);
+  // Shuffle once, then cycle endlessly with a fade every 6s — feels infinite.
+  const [deck] = useState(() => [...FACTS].sort(() => Math.random() - 0.5));
+  const [factIdx, setFactIdx] = useState(0);
+  const [factShow, setFactShow] = useState(true);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFactShow(false);
+      setTimeout(() => {
+        setFactIdx(i => (i + 1) % deck.length);
+        setFactShow(true);
+      }, 450);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [deck.length]);
+  const fact = deck[factIdx];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,7 +222,14 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <div className="w-8 h-0.5 mb-6 rounded-full" style={{ background: '#22C55E' }} />
-          <blockquote className="text-xl font-serif leading-relaxed mb-4" style={{ color: '#A8C8B0' }}>
+          <blockquote
+            className="text-xl font-serif leading-relaxed mb-4"
+            style={{
+              color: '#A8C8B0',
+              opacity: factShow ? 1 : 0,
+              transition: 'opacity 0.45s ease',
+            }}
+          >
             "{fact}"
           </blockquote>
           <p className="text-sm font-medium" style={{ color: 'var(--text-faint)' }}>— Nature Fact</p>
