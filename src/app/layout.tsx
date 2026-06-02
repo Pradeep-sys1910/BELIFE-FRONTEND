@@ -6,6 +6,7 @@ import ThemeProvider from '@/components/ThemeProvider';
 import SideNav from '@/components/layout/SideNav';
 import BottomNav from '@/components/layout/BottomNav';
 import MobileHeader from '@/components/layout/MobileHeader';
+import RightSidebar from '@/components/layout/RightSidebar';
 import OnboardingGuard from '@/components/OnboardingGuard';
 import './globals.css';
 
@@ -69,9 +70,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <MobileHeader />
             <div className="flex min-h-screen">
               <SideNav />
-              <main className="flex-1 md:ml-[244px] pt-[52px] md:pt-0 pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0 min-w-0">
-                {children}
-              </main>
+              <div className="flex flex-1 md:ml-[244px] min-w-0">
+                <main className="flex-1 min-w-0 pt-[52px] md:pt-0 pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
+                  {children}
+                </main>
+                <RightSidebar />
+              </div>
             </div>
             <BottomNav />
             <ToasterProvider />
