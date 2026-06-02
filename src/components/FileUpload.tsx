@@ -4,36 +4,64 @@ import { useRef, useState } from 'react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
+interface UploadMeta { name: string; type: string; size: number }
+
 interface Props {
-  onUpload: (url: string) => void;
-  accept?: 'image' | 'video' | 'both';
+  onUpload: (url: string, meta?: UploadMeta) => void;
+  accept?: 'image' | 'video' | 'both' | 'media';
   label?: string;
   currentUrl?: string;
+  resetAfterUpload?: boolean;   // clear the picker so it's ready for the next file (attachments)
 }
 
-const LIMITS = { image: 10, video: 60 };
+const DOC_MIMES = [
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+];
 
-export default function FileUpload({ onUpload, accept = 'both', label = 'Upload File', currentUrl }: Props) {
+const ACCEPT_ATTR: Record<NonNullable<Props['accept']>, string> = {
+  image: 'image/*',
+  video: 'video/*',
+  both:  'image/*,video/*',
+  media: `image/*,video/*,.ppt,.pptx,.xls,.xlsx,${DOC_MIMES.join(',')}`,
+};
+
+const LIMITS = { image: 10, video: 60, doc: 25 }; // MB — must match backend
+
+export default function FileUpload({ onUpload, accept = 'both', label = 'Upload File', currentUrl, resetAfterUpload }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const acceptAttr = accept === 'image' ? 'image/*' : accept === 'video' ? 'video/*' : 'image/*,video/*';
+  const acceptAttr = ACCEPT_ATTR[accept];
 
   const handleFile = async (file: File) => {
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
+    const isDoc   = DOC_MIMES.includes(file.type);
 
-    if (!isImage && !isVideo) {
-      toast.error('Only images and videos are allowed.');
+    const allowed =
+      accept === 'image' ? isImage :
+      accept === 'video' ? isVideo :
+      accept === 'both'  ? (isImage || isVideo) :
+      (isImage || isVideo || isDoc); // 'media'
+
+    if (!allowed) {
+      toast.error(
+        accept === 'media'
+          ? 'Only images, videos, PowerPoint, and Excel files are allowed.'
+          : accept === 'image' ? 'Only image files are allowed.'
+          : 'Only images and videos are allowed.'
+      );
       return;
     }
 
-    const limitMB = isImage ? LIMITS.image : LIMITS.video;
+    const limitMB = isImage ? LIMITS.image : isVideo ? LIMITS.video : LIMITS.doc;
     const sizeMB = file.size / 1024 / 1024;
-
     if (sizeMB > limitMB) {
-      toast.error(`${isImage ? 'Image' : 'Video'} too large! Maximum is ${limitMB}MB. Your file is ${sizeMB.toFixed(1)}MB.`);
+      toast.error(`File too large! Maximum is ${limitMB}MB. Your file is ${sizeMB.toFixed(1)}MB.`);
       return;
     }
 
@@ -63,8 +91,9 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
       });
 
       reservedKey = null; // upload succeeded — keep the reserved quota
-      onUpload(data.publicUrl);
+      onUpload(data.publicUrl, { name: file.name, type: file.type, size: file.size });
       toast.success('Uploaded successfully! 🌿');
+      if (resetAfterUpload && inputRef.current) inputRef.current.value = '';
     } catch (err: any) {
       // Release the reserved storage quota if the upload never completed
       if (reservedKey) {
@@ -135,6 +164,7 @@ export default function FileUpload({ onUpload, accept = 'both', label = 'Upload 
               {accept === 'image' && 'Images up to 10MB (JPEG, PNG, WebP, GIF)'}
               {accept === 'video' && 'Videos up to 60MB (MP4, WebM, MOV)'}
               {accept === 'both' && 'Images up to 10MB · Videos up to 60MB'}
+              {accept === 'media' && 'Images 10MB · Videos 60MB · PPT/Excel 25MB'}
             </p>
             <p className="text-xs" style={{ color: 'var(--text-faint)' }}>Click or drag &amp; drop</p>
           </div>

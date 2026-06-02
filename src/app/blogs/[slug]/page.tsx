@@ -21,6 +21,7 @@ interface Blog {
   readTime: number;
   views: number;
   tags: string[];
+  attachments?: string[];
   createdAt: string;
   author: { id: string; name: string; avatar?: string; bio?: string };
   category: { name: string; slug: string };
@@ -252,6 +253,33 @@ export default function BlogDetailPage() {
           {blog.content}
         </ReactMarkdown>
       </div>
+
+      {/* Attachments */}
+      {blog.attachments && blog.attachments.length > 0 && (
+        <div className="mb-10">
+          <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>📎 Attachments</h3>
+          <div className="space-y-2">
+            {blog.attachments.map((url, i) => {
+              const ext = (url.split('.').pop() || '').toLowerCase().split(/[?#]/)[0];
+              const icon = /^(jpg|jpeg|png|webp|gif)$/.test(ext) ? '🖼️'
+                : /^(mp4|webm|mov)$/.test(ext) ? '🎬'
+                : /^(ppt|pptx)$/.test(ext) ? '📑'
+                : /^(xls|xlsx)$/.test(ext) ? '📊' : '📎';
+              return (
+                <a key={url} href={url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl transition group"
+                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                  <span className="text-lg shrink-0">{icon}</span>
+                  <span className="flex-1 text-sm group-hover:text-eco-400 transition-colors" style={{ color: 'var(--text)' }}>
+                    Attachment {i + 1}{ext ? ` · ${ext.toUpperCase()}` : ''}
+                  </span>
+                  <span className="text-xs" style={{ color: 'var(--eco-bright)' }}>Open ↗</span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Tags */}
       {blog.tags?.length > 0 && (
