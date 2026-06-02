@@ -133,7 +133,10 @@ function MessagesContent() {
   if (!user) return null;
 
   return (
-    <div className="flex h-[calc(100vh-48px)] md:h-screen" style={{ background: 'var(--bg)' }}>
+    <div
+      className="flex fixed inset-x-0 top-[52px] bottom-[calc(64px_+_env(safe-area-inset-bottom))] z-30 md:static md:z-auto md:inset-auto md:h-screen"
+      style={{ background: 'var(--bg)' }}
+    >
       {/* Conversation list */}
       <div className={`${showList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-[360px]`}
         style={{ borderRight: '1px solid var(--border)' }}>
