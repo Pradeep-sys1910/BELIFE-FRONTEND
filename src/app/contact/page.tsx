@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '@/lib/api';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -12,11 +13,17 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sending) return;
     setSending(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setSending(false);
-    setSent(true);
-    toast.success("Message sent! We'll get back to you soon.");
+    try {
+      await api.post('/contact', form);
+      setSent(true);
+      toast.success("Message sent! We'll get back to you soon.");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Could not send. Please try again or email us directly.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
