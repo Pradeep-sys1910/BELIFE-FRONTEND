@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 import { getSocket } from '@/lib/socket';
 
 interface OtherUser { id: string; name: string; username?: string; avatar?: string; }
-interface Message { id: string; content: string; senderId: string; createdAt: string; isRead: boolean; }
+interface Message { id: string; content: string; senderId: string; createdAt: string; isRead: boolean; status?: 'sending' | 'sent' | 'failed'; }
 interface Conversation {
   id: string;
   other: OtherUser;
@@ -93,19 +93,56 @@ function MessagesContent() {
     const sock = getSocket(token || '');
     sock.on('new_message', (msg: Message) => {
       setActive(prev => {
-        if (!prev) return prev;
-        if (prev.conv.other.id === msg.senderId) {
-          return { ...prev, messages: [...prev.messages, msg] };
-        }
-        return prev;
+        if (!prev || prev.conv.other.id !== msg.senderId) return prev;
+        if (prev.messages.some(m => m.id === msg.id)) return prev; // dedupe
+        return { ...prev, messages: [...prev.messages, msg] };
       });
-      setConvs(prev => prev.map(c =>
-        c.other.id === msg.senderId
+      setConvs(prev => {
+        const exists = prev.find(c => c.other.id === msg.senderId);
+        if (!exists) {
+          // First message from someone new — pull the fresh conversation list.
+          api.fresh('/messages').then(r => setConvs(r.data)).catch(() => {});
+          return prev;
+        }
+        return prev.map(c => c.other.id === msg.senderId
           ? { ...c, lastMessage: { content: msg.content, createdAt: msg.createdAt, isRead: false, isMine: false } }
-          : c
-      ));
+          : c);
+      });
     });
     return () => { sock.off('new_message'); };
+  }, [user]);
+
+  // Safety-net poll: even if the socket drops (mobile networks, sleeping dyno),
+  // the open conversation refreshes every few seconds so messages still arrive.
+  useEffect(() => {
+    const otherId = active?.conv.other.id;
+    if (!otherId) return;
+    const t = setInterval(async () => {
+      try {
+        const { data } = await api.fresh(`/messages/${otherId}`);
+        const incoming: Message[] = data.messages || [];
+        setActive(prev => {
+          if (!prev || prev.conv.other.id !== otherId) return prev;
+          const have = new Set(prev.messages.map(m => m.id));
+          const fresh = incoming.filter(m => !have.has(m.id));
+          if (fresh.length === 0) return prev;
+          const merged = [...prev.messages, ...fresh].sort(
+            (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+          return { ...prev, messages: merged };
+        });
+      } catch {}
+    }, 4000);
+    return () => clearInterval(t);
+  }, [active?.conv.other.id]);
+
+  // Keep the conversation list reasonably fresh as a fallback to socket updates.
+  useEffect(() => {
+    if (!user) return;
+    const t = setInterval(() => {
+      api.fresh('/messages').then(r => setConvs(r.data)).catch(() => {});
+    }, 12000);
+    return () => clearInterval(t);
   }, [user]);
 
   useEffect(() => {
@@ -113,18 +150,38 @@ function MessagesContent() {
   }, [active?.messages]);
 
   const sendMsg = async () => {
-    if (!text.trim() || !active || sending) return;
+    const content = text.trim();
+    if (!content || !active || !user) return;
+    const otherId = active.conv.other.id;
+    const tempId  = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+    // Optimistic: show the message instantly so sending feels instant.
+    const optimistic: Message = {
+      id: tempId, content, senderId: user.id,
+      createdAt: new Date().toISOString(), isRead: false, status: 'sending',
+    };
+    setActive(prev => prev ? { ...prev, messages: [...prev.messages, optimistic] } : prev);
+    setText('');
     setSending(true);
+
     try {
-      const { data } = await api.post(`/messages/${active.conv.other.id}`, { content: text.trim() });
-      setActive(prev => prev ? { ...prev, messages: [...prev.messages, data] } : prev);
+      const { data } = await api.post(`/messages/${otherId}`, { content });
+      // Swap the optimistic bubble for the confirmed server message.
+      setActive(prev => prev
+        ? { ...prev, messages: prev.messages.map(m => m.id === tempId ? { ...data, status: 'sent' } : m) }
+        : prev);
       setConvs(prev => {
-        const exists = prev.find(c => c.other.id === active.conv.other.id);
-        const updated = { ...active.conv, id: data.conversationId || active.conv.id, lastMessage: { content: text.trim(), createdAt: data.createdAt, isRead: true, isMine: true } };
-        if (exists) return prev.map(c => c.other.id === active.conv.other.id ? updated : c);
+        const exists  = prev.find(c => c.other.id === otherId);
+        const updated = { ...active.conv, id: data.conversationId || active.conv.id, lastMessage: { content, createdAt: data.createdAt, isRead: true, isMine: true } };
+        if (exists) return prev.map(c => c.other.id === otherId ? updated : c);
         return [updated, ...prev];
       });
-      setText('');
+      api.invalidate('/messages'); // refresh cached list/threads elsewhere
+    } catch {
+      // Mark the bubble failed so the user knows to retry instead of silently losing it.
+      setActive(prev => prev
+        ? { ...prev, messages: prev.messages.map(m => m.id === tempId ? { ...m, status: 'failed' } : m) }
+        : prev);
     } finally {
       setSending(false);
     }
@@ -253,14 +310,18 @@ function MessagesContent() {
               return (
                 <div key={msg.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                   <div className="max-w-[70%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed"
-                    style={mine
-                      ? { background: 'var(--eco)', color: '#050C07', borderBottomRightRadius: 4 }
-                      : { background: 'var(--bg-elevated)', color: 'var(--text)', border: '1px solid var(--border)', borderBottomLeftRadius: 4 }
-                    }>
+                    style={{
+                      ...(mine
+                        ? { background: 'var(--eco)', color: '#050C07', borderBottomRightRadius: 4 }
+                        : { background: 'var(--bg-elevated)', color: 'var(--text)', border: '1px solid var(--border)', borderBottomLeftRadius: 4 }),
+                      opacity: msg.status === 'sending' ? 0.6 : 1,
+                    }}>
                     {msg.content}
                     <p className="text-[10px] mt-1"
-                      style={{ color: mine ? 'rgba(5,12,7,0.6)' : 'var(--text-faint)' }}>
-                      {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
+                      style={{ color: msg.status === 'failed' ? '#F87171' : mine ? 'rgba(5,12,7,0.6)' : 'var(--text-faint)' }}>
+                      {msg.status === 'sending' ? 'Sending…'
+                        : msg.status === 'failed' ? 'Failed to send — check connection'
+                        : formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
                     </p>
                   </div>
                 </div>
@@ -280,7 +341,7 @@ function MessagesContent() {
               className="flex-1 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)]"
               style={{ background: 'var(--bg-elevated)', color: 'var(--text)', border: '1px solid var(--border)' }}
             />
-            <button onClick={sendMsg} disabled={!text.trim() || sending}
+            <button onClick={sendMsg} disabled={!text.trim()}
               className="w-9 h-9 rounded-full flex items-center justify-center text-white disabled:opacity-40 transition shrink-0"
               style={{ background: 'var(--eco)', color: '#050C07' }}>
               <Send className="w-4 h-4" />
