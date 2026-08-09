@@ -8,6 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { getEcoBadge } from '@/lib/ecoBadge';
+import BadgeShelf from '@/components/BadgeShelf';
 
 interface PublicUser {
   id: string;
@@ -204,6 +205,9 @@ export default function PublicProfilePage() {
           )}
         </div>
       </header>
+
+      {/* Achievement badges */}
+      {!isPrivate && <BadgeShelf userId={user.id} />}
 
       {/* Divider */}
       <div className="mb-6" style={{ borderTop: '1px solid var(--border)' }} />

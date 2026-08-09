@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'About BeLife',
-  description: 'Learn about BeLife — a community platform for sustainable living stories, built from scratch in 2026.',
+  description: 'Discover BeLife’s new direction: a travel-based reward system that helps people explore, earn meaningful badges, and share nature-inspired journeys.',
 };
 
 const journey = [
@@ -57,19 +57,47 @@ export default function AboutPage() {
 
       <div className="space-y-12" style={{ color: 'var(--text-muted)' }}>
 
-        {/* What is BeLife */}
+        {/* What is BeLife becoming? */}
         <section>
           <h2 className="text-2xl font-serif font-semibold mb-3" style={{ color: 'var(--text)' }}>
-            What is BeLife?
+            What is BeLife becoming?
           </h2>
           <p className="leading-relaxed">
-            BeLife is a community-driven platform for people who care about the planet.
-            A space for writers, thinkers, and everyday humans to share stories about
-            sustainable living, eco-conscious choices, nature, and a greener way of life.
+            BeLife started without a fixed blueprint. We were not sure exactly what it should become.
+            But we found a clearer direction: a travel-based rewarding system that turns exploration
+            into progress, discovery into purpose, and nature into something people can experience together.
           </p>
           <p className="mt-3 leading-relaxed">
-            No algorithms deciding what you see. No ads cluttering your feed. Just honest stories
-            from real people who want to live better — and inspire others to do the same.
+            The idea is simple. People discover places, share experiences, earn badges for meaningful
+            participation, and help others travel with more confidence, curiosity, and care.
+          </p>
+        </section>
+
+        {/* Why badges matter */}
+        <section>
+          <h2 className="text-2xl font-serif font-semibold mb-3" style={{ color: 'var(--text)' }}>
+            Why badges matter
+          </h2>
+          <p className="leading-relaxed">
+            Badges are not just rewards. They are a way to make travel feel more guided and more exciting.
+            A user can earn recognition for exploring, documenting, participating, and helping the community
+            discover what is worth seeing, doing, or preserving.
+          </p>
+          <ul className="mt-3 space-y-2 list-disc pl-5 leading-relaxed">
+            <li>Rewards are tied to real contribution, not empty engagement.</li>
+            <li>Badges help people discover destinations, stories, and experiences worth exploring.</li>
+            <li>Picture availability and results can strengthen trust in the journey and the reward.</li>
+          </ul>
+        </section>
+
+        {/* Secure by design */}
+        <section>
+          <h2 className="text-2xl font-serif font-semibold mb-3" style={{ color: 'var(--text)' }}>
+            Secure by design
+          </h2>
+          <p className="leading-relaxed">
+            The reward system is being shaped with security in mind. Badge progress is calculated on the server,
+            based on verified activity and profile visibility, so it is harder to manipulate and more trustworthy for everyone.
           </p>
         </section>
 
@@ -79,9 +107,9 @@ export default function AboutPage() {
             Our Mission
           </h2>
           <p className="leading-relaxed">
-            We believe small stories create big change. BeLife exists to make sustainable living
-            feel achievable, relatable, and worth sharing. Whether you're composting for the first
-            time or living completely off-grid — your story belongs here.
+            We believe small journeys create big change. BeLife exists to make exploration feel more meaningful,
+            more rewarding, and more shared. Whether you are discovering a hidden trail, documenting a local moment,
+            or inspiring someone else to travel with intention — your story belongs here.
           </p>
         </section>
 

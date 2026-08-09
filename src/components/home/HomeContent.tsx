@@ -345,11 +345,13 @@ export default function HomeContent() {
   const [followLoadMore, setFollowLoadMore]= useState(false);
 
   const sentinelRef = useRef<HTMLDivElement>(null);
+  // Fresh seed per mount → feed order varies each visit instead of identical newest-first.
+  const seedRef = useRef(Math.random().toString(36).slice(2));
 
   // Initial load
   useEffect(() => {
     Promise.all([
-      api.get('/blogs', { params: { limit: PAGE_SIZE, page: 1 } }).catch(() => ({ data: { blogs: [] } })),
+      api.get('/blogs', { params: { limit: PAGE_SIZE, page: 1, seed: seedRef.current } }).catch(() => ({ data: { blogs: [] } })),
       api.get('/categories').catch(() => ({ data: [] })),
     ]).then(([bRes, cRes]) => {
       const newBlogs = (bRes.data as any).blogs || [];
@@ -365,7 +367,7 @@ export default function HomeContent() {
     setLoadingMore(true);
     const next = page + 1;
     try {
-      const { data } = await api.get('/blogs', { params: { limit: PAGE_SIZE, page: next } });
+      const { data } = await api.get('/blogs', { params: { limit: PAGE_SIZE, page: next, seed: seedRef.current } });
       const newBlogs = (data as any).blogs || [];
       setBlogs(prev => [...prev, ...newBlogs]);
       setPage(next);
