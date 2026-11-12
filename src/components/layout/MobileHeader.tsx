@@ -21,7 +21,6 @@ export default function MobileHeader() {
         height: '52px',
         background: 'var(--bg-sidebar)',
         borderBottom: '1px solid var(--border)',
-        backdropFilter: 'blur(16px)',
       }}
     >
       <Link href="/">

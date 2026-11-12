@@ -97,7 +97,7 @@ export default function RightSidebar() {
 
       {/* Recent Stories */}
       <div
-        className="rounded-2xl p-4 mb-4 animate-fade-in"
+        className="rounded-2xl p-4 mb-4"
         style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
       >
         <div className="flex items-center gap-2 mb-4">
@@ -158,7 +158,7 @@ export default function RightSidebar() {
       {/* Suggested Writers (auth only) */}
       {user && (
         <div
-          className="rounded-2xl p-4 mb-4 animate-fade-in stagger-1"
+          className="rounded-2xl p-4 mb-4"
           style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
         >
           <div className="flex items-center gap-2 mb-4">
@@ -218,33 +218,6 @@ export default function RightSidebar() {
           )}
         </div>
       )}
-
-      {/* Community Quick Links */}
-      <div
-        className="rounded-2xl p-4 animate-fade-in stagger-2"
-        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
-      >
-        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text)' }}>Explore</h3>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { href: '/forum',      label: '💬 Forum' },
-            { href: '/groups',     label: '👥 Groups' },
-            { href: '/campaigns',  label: '📣 Campaigns' },
-            { href: '/challenges', label: '🏆 Challenges' },
-            { href: '/thoughts',   label: '💡 Thoughts' },
-            { href: '/categories', label: '🏷️ Topics' },
-          ].map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 hover:border-[var(--border-eco)] hover:text-[var(--eco-bright)]"
-              style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
 
       {/* Footer links */}
       <div className="mt-4 px-1">

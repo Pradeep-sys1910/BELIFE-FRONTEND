@@ -59,7 +59,6 @@ export default function BottomNav() {
         style={{
           background:     'var(--bg-sidebar)',
           borderTop:      '1px solid var(--border)',
-          backdropFilter: 'blur(20px)',
           paddingBottom:  'env(safe-area-inset-bottom)',
         }}
       >
@@ -67,29 +66,29 @@ export default function BottomNav() {
 
           {/* Home */}
           <Link href="/"
-            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full active:scale-90 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
             style={{ color: pathname === '/' ? 'var(--eco-bright)' : 'var(--text-faint)' }}>
             <Home className="w-[22px] h-[22px]" strokeWidth={pathname === '/' ? 2.3 : 1.5} />
-            <span className="text-[9px] font-semibold tracking-wide">Home</span>
+            <span className="text-[10px] font-semibold tracking-wide">Home</span>
           </Link>
 
           {/* Explore */}
           <Link href="/blogs"
-            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full active:scale-90 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
             style={{ color: isActive('/blogs') ? 'var(--eco-bright)' : 'var(--text-faint)' }}>
             <Compass className="w-[22px] h-[22px]" strokeWidth={isActive('/blogs') ? 2.3 : 1.5} />
-            <span className="text-[9px] font-semibold tracking-wide">Explore</span>
+            <span className="text-[10px] font-semibold tracking-wide">Explore</span>
           </Link>
 
           {/* Write — centre CTA (auth only) */}
           {user && (
             <Link href="/blogs/new"
-              className="flex flex-col items-center justify-center flex-1 h-full active:scale-90 transition-transform">
+              className="flex flex-col items-center justify-center flex-1 h-full">
               <span
-                className="w-12 h-12 rounded-2xl flex items-center justify-center -mt-3 shadow-lg"
-                style={{ background: 'var(--eco)', boxShadow: '0 4px 20px rgba(34,197,94,0.35)' }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center -mt-2"
+                style={{ background: 'var(--eco)' }}
               >
-                <PenSquare className="w-5 h-5" style={{ color: '#050C07' }} strokeWidth={2.3} />
+                <PenSquare className="w-5 h-5" style={{ color: '#07110B' }} strokeWidth={2} />
               </span>
             </Link>
           )}
@@ -110,34 +109,34 @@ export default function BottomNav() {
                   </span>
                 )}
               </span>
-              <span className="text-[9px] font-semibold tracking-wide">Messages</span>
+              <span className="text-[10px] font-semibold tracking-wide">Messages</span>
             </Link>
           )}
 
           {/* More */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full active:scale-90 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
             style={{ color: isMoreActive ? 'var(--eco-bright)' : 'var(--text-faint)' }}
           >
             <MoreHorizontal className="w-[22px] h-[22px]" strokeWidth={isMoreActive ? 2.3 : 1.5} />
-            <span className="text-[9px] font-semibold tracking-wide">More</span>
+            <span className="text-[10px] font-semibold tracking-wide">More</span>
           </button>
 
           {/* Sign in (guest) */}
           {!user && (
             <Link href="/login"
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full active:scale-90 transition-transform"
+            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
               style={{ color: 'var(--text-faint)' }}>
               <User className="w-[22px] h-[22px]" strokeWidth={1.5} />
-              <span className="text-[9px] font-semibold tracking-wide">Sign In</span>
+              <span className="text-[10px] font-semibold tracking-wide">Sign In</span>
             </Link>
           )}
 
           {/* Profile (auth) */}
           {user && (
             <Link href="/dashboard"
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full active:scale-90 transition-transform"
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full"
               style={{ color: isActive('/dashboard') ? 'var(--eco-bright)' : 'var(--text-faint)' }}>
               <span className="relative">
                 <User className="w-[22px] h-[22px]" strokeWidth={isActive('/dashboard') ? 2.3 : 1.5} />
@@ -148,7 +147,7 @@ export default function BottomNav() {
                   />
                 )}
               </span>
-              <span className="text-[9px] font-semibold tracking-wide">Profile</span>
+              <span className="text-[10px] font-semibold tracking-wide">Profile</span>
             </Link>
           )}
 
@@ -164,7 +163,7 @@ export default function BottomNav() {
           {/* Backdrop */}
           <div
             className="absolute inset-0"
-            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            style={{ background: 'rgba(0,0,0,0.58)' }}
           />
 
           {/* Sheet */}
@@ -173,7 +172,6 @@ export default function BottomNav() {
             style={{
               background: 'var(--bg-card)',
               borderTop:  '1px solid var(--border)',
-              animation:  'slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1) both',
             }}
             onClick={e => e.stopPropagation()}
           >

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Heart, MessageCircle, Bookmark, Share2, MoreHorizontal,
-  Users, Sparkles, Leaf, ArrowRight, PenLine, Globe, Trophy,
+  Leaf, ArrowRight, PenLine,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import api from '@/lib/api';
@@ -48,91 +48,33 @@ function GuestLanding() {
   const fmt = (n?: number) => (n == null ? '—' : n.toLocaleString());
 
   return (
-    <div className="pb-8">
-      {/* Hero */}
-      <div className="text-center px-4 pt-8 pb-10 relative overflow-hidden">
-        {/* Ambient glow */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(34,197,94,0.08) 0%, transparent 70%)' }}
-        />
-
-        <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold relative z-10"
-          style={{ background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
-        >
-          <Leaf className="w-3 h-3" />
-          The platform for eco writers
+    <div>
+      <section className="home-guest-hero">
+        <div className="inline-flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--eco-bright)' }}>
+          <Leaf className="h-4 w-4" />
+          The BeLife community
         </div>
-
-        <h1
-          className="font-serif text-4xl sm:text-5xl font-bold mb-4 leading-tight relative z-10"
-          style={{ color: '#E8F5EC' }}
-        >
-          Stories for a<br />
-          <span style={{ color: 'var(--eco-bright)' }}>Greener World</span>
-        </h1>
-
-        <p
-          className="text-base mb-8 max-w-sm mx-auto leading-relaxed relative z-10"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          A community of eco-writers sharing tips on sustainable living, climate action, and mindful choices.
-        </p>
-
-        <div className="flex items-center justify-center gap-3 flex-wrap relative z-10">
-          <Link href="/register" className="btn-primary group">
-            Get started — it's free
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+        <h1>Stories for a greener world</h1>
+        <p>A community sharing practical ideas for sustainable living, climate action, and mindful choices.</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link href="/register" className="btn-primary">
+            Join BeLife
+            <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="/blogs" className="btn-secondary">Browse Stories</Link>
+          <Link href="/blogs" className="btn-secondary">Browse stories</Link>
         </div>
-      </div>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-8 px-1">
-        {[
-          { icon: PenLine, label: 'Stories', value: fmt(stats?.stories) },
-          { icon: Users,   label: 'Members', value: fmt(stats?.members) },
-          { icon: Globe,   label: 'Topics',  value: fmt(stats?.topics) },
-        ].map(({ icon: Icon, label, value }) => (
-          <div
-            key={label}
-            className="flex flex-col items-center gap-1.5 py-4 rounded-2xl"
-            style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
-          >
-            <Icon className="w-4 h-4" style={{ color: 'var(--eco-bright)' }} strokeWidth={1.8} />
-            <span className="text-xl font-bold font-serif" style={{ color: '#E8F5EC' }}>{value}</span>
-            <span className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>{label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Feature pills */}
-      <div className="flex flex-wrap gap-2 justify-center mb-8 px-1">
-        {['🌿 Eco Tips', '♻️ Zero Waste', '🌱 Plant-Based', '🌡️ Climate', '✊ Activism', '🏆 Challenges'].map(tag => (
-          <span
-            key={tag}
-            className="text-xs font-medium px-3 py-1.5 rounded-full"
-            style={{ background: 'var(--bg-elevated)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {/* Divider with label */}
-      <div className="flex items-center gap-3 mb-6 px-1">
-        <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
-        <span className="text-xs font-semibold" style={{ color: 'var(--text-faint)' }}>Latest Stories</span>
-        <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
-      </div>
+        {stats && (
+          <p className="home-social-proof">
+            {fmt(stats.stories)} stories <span aria-hidden="true">·</span> {fmt(stats.members)} members <span aria-hidden="true">·</span> {fmt(stats.topics)} topics
+          </p>
+        )}
+      </section>
     </div>
   );
 }
 
 // ── Post Card ──────────────────────────────────────────────────────────────────
-function PostCard({ blog, index }: { blog: Blog; index: number }) {
+function PostCard({ blog }: { blog: Blog }) {
   const { user } = useAuthStore();
   const router   = useRouter();
   const [liked,  setLiked]  = useState(false);
@@ -160,27 +102,7 @@ function PostCard({ blog, index }: { blog: Blog; index: number }) {
   };
 
   return (
-    <article
-      className="rounded-2xl overflow-hidden mb-4 animate-slide-up"
-      style={{
-        background:     'var(--bg-card)',
-        border:         '1px solid var(--border)',
-        animationDelay: `${index * 0.055}s`,
-        transition:     'border-color 0.2s, box-shadow 0.2s, transform 0.2s',
-      }}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = 'rgba(74,222,128,0.15)';
-        el.style.transform   = 'translateY(-1px)';
-        el.style.boxShadow   = '0 8px 32px rgba(0,0,0,0.5)';
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = 'var(--border)';
-        el.style.transform   = '';
-        el.style.boxShadow   = '';
-      }}
-    >
+    <article className="home-story-card">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <Link
@@ -215,7 +137,7 @@ function PostCard({ blog, index }: { blog: Blog; index: number }) {
           <div className="w-full aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
             <img
               src={blog.image} alt={blog.title}
-              className="w-full h-full object-cover hover:scale-[1.04] transition-transform duration-500"
+              className="home-story-image object-cover"
               loading="lazy"
             />
           </div>
@@ -227,7 +149,7 @@ function PostCard({ blog, index }: { blog: Blog; index: number }) {
         <Link href={`/blogs/${blog.slug}`}>
           <h2
             className="text-base font-semibold leading-snug line-clamp-2 mb-1 transition-colors hover:text-eco-400"
-            style={{ color: '#E8F5EC' }}
+            style={{ color: 'var(--text)' }}
           >
             {blog.title}
           </h2>
@@ -426,69 +348,78 @@ export default function HomeContent() {
   const feedHasMore   = tab === 'forYou' ? hasMore : followHasMore;
 
   return (
-    <div className="max-w-[640px] mx-auto px-4 pt-6 pb-16">
+    <div className="home-page max-w-[640px] mx-auto px-4 pt-6 pb-16">
 
       {/* Guest landing (shows above the feed for non-logged-in users) */}
       {!user && !loading && <GuestLanding />}
 
-      {/* Category bubbles */}
-      {categories.length > 0 && (
-        <div className="relative mb-6">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-3">
-            {categories.map(cat => (
-              <Link key={cat.slug} href={`/categories/${cat.slug}`}
-                className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer">
-                <div
-                  className="w-14 h-14 rounded-full p-[2px] transition-all duration-200"
-                  style={{ background: 'linear-gradient(135deg, #22C55E, #0F4C25)' }}
-                >
-                  <div
-                    className="w-full h-full rounded-full flex items-center justify-center text-xl"
-                    style={{ background: 'var(--bg-elevated)' }}
-                  >
-                    {cat.icon}
-                  </div>
-                </div>
-                <span
-                  className="text-[11px] font-medium truncate w-14 text-center transition-colors group-hover:text-eco-400"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {cat.name.split(' ')[0]}
-                </span>
-              </Link>
-            ))}
+      {user && (
+        <>
+          <header className="home-welcome">
+            <div>
+              <p className="home-welcome-label">YOUR COMMUNITY</p>
+              <h1 className="home-welcome-title">Welcome back, {user.name.split(' ')[0]}</h1>
+            </div>
+          </header>
+
+          <section className="home-hero" aria-labelledby="home-hero-title">
+            <p className="home-welcome-label">A place for ideas that matter</p>
+            <h2 id="home-hero-title">Small choices. Real change.</h2>
+            <p>Share what you are learning, find people who care, and turn everyday ideas into action.</p>
+            <Link href="/categories" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--eco-bright)' }}>
+              Explore topics <ArrowRight className="h-4 w-4" />
+            </Link>
+          </section>
+
+          <Link href="/blogs/new" className="home-compose">
+            <Avatar name={user.name} avatar={user.avatar} />
+            <span className="home-compose-label">What would you like to share today?</span>
+            <span className="home-compose-action inline-flex items-center gap-2"><PenLine className="h-4 w-4" /><span className="hidden sm:inline">Write</span></span>
+          </Link>
+
+          <div className="home-section-head">
+            <h2>From your community</h2>
+            <Link href="/blogs">Browse stories <ArrowRight className="inline h-3.5 w-3.5" /></Link>
           </div>
-          <div
-            className="absolute top-0 right-0 h-[calc(100%-12px)] w-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to left, var(--bg), transparent)' }}
-          />
+        </>
+      )}
+
+      {!user && !loading && categories.length > 0 && (
+        <nav className="home-topic-list" aria-label="Browse story topics">
+          {categories.slice(0, 6).map(category => (
+            <Link key={category.slug} href={`/categories/${category.slug}`}>
+              {category.icon} {category.name}
+            </Link>
+          ))}
+        </nav>
+      )}
+
+      {!user && !loading && (
+        <div className="home-section-head">
+          <h2>Latest stories</h2>
+          <Link href="/blogs">Explore all <ArrowRight className="inline h-3.5 w-3.5" /></Link>
         </div>
       )}
 
       {/* Feed tabs (auth only) */}
       {user && (
-        <div className="flex gap-1 mb-4 p-1 rounded-xl" style={{ background: 'var(--bg-elevated)' }}>
+        <div className="home-feed-tabs" role="group" aria-label="Choose your feed">
           {([
-            { key: 'forYou',    label: 'For You',   icon: Sparkles, onClick: () => setTab('forYou') },
-            { key: 'following', label: 'Following', icon: Users,    onClick: handleFollowingTab },
-          ] as const).map(({ key, label, icon: Icon, onClick }) => (
+            { key: 'forYou', label: 'For You', onClick: () => setTab('forYou') },
+            { key: 'following', label: 'Following', onClick: handleFollowingTab },
+          ] as const).map(({ key, label, onClick }) => (
             <button
               key={key}
+              type="button"
               onClick={onClick}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
-              style={tab === key
-                ? { background: 'var(--bg-card)', color: '#DFF0E3', boxShadow: '0 1px 4px rgba(0,0,0,0.4)' }
-                : { color: 'var(--text-faint)' }}
+              aria-pressed={tab === key}
+              className="home-feed-tab"
             >
-              <Icon className="w-3.5 h-3.5" />
               {label}
             </button>
           ))}
         </div>
       )}
-
-      {/* Divider */}
-      <div className="mb-5" style={{ borderTop: '1px solid var(--border)' }} />
 
       {/* Feed */}
       {feedLoading ? (
@@ -496,7 +427,7 @@ export default function HomeContent() {
       ) : tab === 'following' && feed.length === 0 ? (
         <div className="text-center py-24">
           <div className="text-5xl mb-4">🌿</div>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: '#E8F5EC' }}>Following feed is empty</h3>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text)' }}>Following feed is empty</h3>
           <p className="text-sm mb-6 max-w-xs mx-auto" style={{ color: 'var(--text-muted)' }}>
             Follow eco-writers to see their stories here.{' '}
             <Link href="/blogs" className="text-eco-400 hover:underline">Explore stories →</Link>
@@ -505,7 +436,7 @@ export default function HomeContent() {
       ) : feed.length === 0 && user ? (
         <div className="text-center py-12">
           <div className="text-4xl mb-3">🌱</div>
-          <h3 className="text-base font-semibold mb-1.5" style={{ color: '#E8F5EC' }}>No stories yet</h3>
+          <h3 className="text-base font-semibold mb-1.5" style={{ color: 'var(--text)' }}>No stories yet</h3>
           <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
             Be the first to share an eco story.
           </p>
@@ -513,7 +444,7 @@ export default function HomeContent() {
         </div>
       ) : (
         <>
-          {feed.map((blog, i) => <PostCard key={blog.id} blog={blog} index={i} />)}
+          {feed.map(blog => <PostCard key={blog.id} blog={blog} />)}
 
           {/* Infinite scroll sentinel */}
           <div ref={sentinelRef} className="h-4" />
@@ -531,11 +462,11 @@ export default function HomeContent() {
           {/* End of feed */}
           {!feedHasMore && feed.length > 0 && (
             <div className="text-center pt-2 pb-8">
-              <p className="text-xs mb-4" style={{ color: 'var(--text-faint)' }}>You're all caught up 🌿</p>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>You're all caught up</p>
               <Link
                 href="/blogs"
-                className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-2.5 rounded-full transition-all"
-                style={{ color: '#4ADE80', border: '1px solid rgba(74,222,128,0.2)' }}
+                className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-2.5 rounded-full"
+                style={{ color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }}
               >
                 Explore all stories
               </Link>

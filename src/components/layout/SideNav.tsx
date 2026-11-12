@@ -7,29 +7,58 @@ import {
   Home, Compass, Search, Tag, PenSquare, User, LogOut,
   MessageCircle, Settings, Users, UsersRound,
   Bell, Lightbulb, Megaphone, Trophy, Bookmark,
+  type LucideIcon,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 
-const navItems = [
-  { href: '/',               icon: Home,          label: 'Home' },
-  { href: '/blogs',          icon: Compass,       label: 'Explore' },
-  { href: '/search',         icon: Search,        label: 'Search' },
-  { href: '/thoughts',       icon: Lightbulb,     label: 'Thoughts' },
-  { href: '/categories',     icon: Tag,           label: 'Topics' },
-  { href: '/forum',          icon: Users,         label: 'Forum' },
-  { href: '/groups',         icon: UsersRound,    label: 'Groups' },
-  { href: '/campaigns',      icon: Megaphone,     label: 'Campaigns' },
-  { href: '/challenges',     icon: Trophy,        label: 'Challenges' },
-  { href: '/bookmarks',      icon: Bookmark,      label: 'Saved',          auth: true },
-  { href: '/notifications',  icon: Bell,          label: 'Notifications',  auth: true, badge: 'notifs' },
-  { href: '/messages',       icon: MessageCircle, label: 'Messages',       auth: true, badge: 'msgs' },
-  { href: '/blogs/new',      icon: PenSquare,     label: 'Write',          auth: true },
-  { href: '/dashboard',      icon: User,          label: 'Profile',        auth: true },
-  { href: '/settings',       icon: Settings,      label: 'Settings',       auth: true },
-] as const;
+type NavItem = {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  auth?: boolean;
+  badge?: 'notifs' | 'msgs';
+};
+
+const navGroups: { label: string; items: NavItem[] }[] = [
+  {
+    label: 'Main',
+    items: [
+      { href: '/', icon: Home, label: 'Home' },
+      { href: '/blogs', icon: Compass, label: 'Explore' },
+      { href: '/blogs/new', icon: PenSquare, label: 'Create', auth: true },
+    ],
+  },
+  {
+    label: 'Discover',
+    items: [
+      { href: '/search', icon: Search, label: 'Search' },
+      { href: '/categories', icon: Tag, label: 'Topics' },
+      { href: '/thoughts', icon: Lightbulb, label: 'Thoughts' },
+    ],
+  },
+  {
+    label: 'Community',
+    items: [
+      { href: '/forum', icon: Users, label: 'Forum' },
+      { href: '/groups', icon: UsersRound, label: 'Groups' },
+      { href: '/campaigns', icon: Megaphone, label: 'Campaigns' },
+      { href: '/challenges', icon: Trophy, label: 'Challenges' },
+    ],
+  },
+  {
+    label: 'Personal',
+    items: [
+      { href: '/bookmarks', icon: Bookmark, label: 'Saved', auth: true },
+      { href: '/notifications', icon: Bell, label: 'Notifications', auth: true, badge: 'notifs' },
+      { href: '/messages', icon: MessageCircle, label: 'Messages', auth: true, badge: 'msgs' },
+      { href: '/dashboard', icon: User, label: 'Profile', auth: true },
+      { href: '/settings', icon: Settings, label: 'Settings', auth: true },
+    ],
+  },
+];
 
 export default function SideNav() {
   const pathname = usePathname();
@@ -64,56 +93,52 @@ export default function SideNav() {
       </Link>
 
       {/* Nav links */}
-      <div className="flex-1 flex flex-col gap-0.5 overflow-y-auto no-scrollbar">
-        {navItems.map(({ href, icon: Icon, label, ...rest }) => {
-          const auth  = (rest as any).auth;
-          const badge = (rest as any).badge as 'notifs' | 'msgs' | undefined;
-          if (auth && !user) return null;
-          const active = pathname === href || (href !== '/' && pathname.startsWith(href));
-          const count  = badge === 'notifs' ? unreadNotifs : badge === 'msgs' ? unreadMsgs : 0;
+      <div className="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar">
+        {navGroups.map(({ label: groupLabel, items }) => {
+          const visibleItems = items.filter(item => !item.auth || user);
+          if (visibleItems.length === 0) return null;
+
           return (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.97] group relative"
-              style={{
-                background: active ? 'var(--eco-dim)'    : undefined,
-                color:      active ? 'var(--eco-bright)' : 'var(--text-muted)',
-              }}
-            >
-              <span
-                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                style={{ background: active ? undefined : 'var(--bg-hover)' }}
-                aria-hidden
-              />
-              <span className="relative z-10">
-                <Icon
-                  className="w-5 h-5 transition-colors duration-200"
-                  style={{ color: active ? 'var(--eco-bright)' : undefined }}
-                  strokeWidth={active ? 2.2 : 1.6}
-                />
-                {count > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 rounded-full text-[8px] font-bold flex items-center justify-center"
-                    style={{ background: '#22C55E', color: '#050C07' }}
-                  >
-                    {count > 9 ? '9+' : count}
-                  </span>
-                )}
-              </span>
-              <span
-                className="text-sm font-medium relative z-10 transition-colors duration-200 group-hover:text-[var(--text)]"
-                style={{ color: active ? 'var(--eco-bright)' : undefined }}
-              >
-                {label}
-              </span>
-              {active && (
-                <span
-                  className="ml-auto w-1.5 h-1.5 rounded-full relative z-10"
-                  style={{ background: 'var(--eco-bright)', boxShadow: '0 0 6px var(--eco)' }}
-                />
-              )}
-            </Link>
+            <section key={groupLabel} aria-label={`${groupLabel} navigation`}>
+              <p className="px-3 mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: 'var(--text-faint)' }}>
+                {groupLabel}
+              </p>
+              <div className="flex flex-col gap-0.5">
+                {visibleItems.map(({ href, icon: Icon, label, badge }) => {
+                  const active = pathname === href || (href !== '/' && pathname.startsWith(href));
+                  const count = badge === 'notifs' ? unreadNotifs : badge === 'msgs' ? unreadMsgs : 0;
+
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      aria-current={active ? 'page' : undefined}
+                      className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium"
+                      style={{
+                        background: active ? 'var(--eco-dim)' : undefined,
+                        color: active ? 'var(--eco-bright)' : 'var(--text-muted)',
+                      }}
+                    >
+                      <Icon className="relative z-10 h-5 w-5 shrink-0" strokeWidth={active ? 2 : 1.7} />
+                      <span className="relative z-10">{label}</span>
+                      {count > 0 && (
+                        <span
+                          className="relative z-10 ml-auto min-w-5 rounded-full px-1 text-center text-[10px] font-bold"
+                          style={{ background: 'var(--eco)', color: '#07110B' }}
+                        >
+                          {count > 9 ? '9+' : count}
+                        </span>
+                      )}
+                      <span
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100"
+                        style={{ background: active ? undefined : 'var(--bg-hover)' }}
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
           );
         })}
       </div>
