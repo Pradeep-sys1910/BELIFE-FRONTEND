@@ -49,8 +49,25 @@ function recordSuccess() {
 interface CacheEntry { data: unknown; ts: number }
 const _cache = new Map<string, CacheEntry>();
 
+function authScope(): string {
+  const token = Cookies.get('belife_token');
+  if (!token) return 'public';
+
+  // Scope cached GETs and in-flight deduplication to the current login without
+  // retaining the bearer token itself as a map key.
+  let firstHash = 2166136261;
+  let secondHash = 0x9e3779b9;
+  for (let i = 0; i < token.length; i++) {
+    const code = token.charCodeAt(i);
+    firstHash = Math.imul(firstHash ^ code, 16777619);
+    secondHash = Math.imul(secondHash ^ code, 0x85ebca6b);
+    secondHash = Math.imul(secondHash ^ (secondHash >>> 13), 0xc2b2ae35);
+  }
+  return `auth-${(firstHash >>> 0).toString(36)}-${(secondHash >>> 0).toString(36)}`;
+}
+
 function cacheKey(url: string, params?: Record<string, unknown>): string {
-  return url + (params ? '?' + new URLSearchParams(params as any).toString() : '');
+  return `${authScope()}|${url}${params ? '?' + new URLSearchParams(params as any).toString() : ''}`;
 }
 
 function getCached(key: string): CacheEntry | null {
@@ -170,6 +187,10 @@ const api = {
   patch:  (url: string, data?: unknown, config?: AxiosRequestConfig) =>
     withRetry(() => _axios.patch(url, data, config), 1),
 
+  /** Authenticated reads that must not be cached or shared across requests. */
+  privateGet: (url: string, config?: AxiosRequestConfig) =>
+    withRetry(() => _axios.get(url, config)),
+
   delete: (url: string, config?: AxiosRequestConfig) =>
     withRetry(() => _axios.delete(url, config), 1),
 
@@ -182,9 +203,11 @@ const api = {
 
   /** Invalidate cache entries whose URL contains the given prefix. */
   invalidate: (prefix: string) => {
-    for (const key of _cache.keys()) {
-      if (key.startsWith(prefix)) _cache.delete(key);
-    }
+    _cache.forEach((_entry, key) => {
+      const separator = key.indexOf('|');
+      const url = separator >= 0 ? key.slice(separator + 1) : key;
+      if (url.startsWith(prefix)) _cache.delete(key);
+    });
   },
 
   clearCache: () => _cache.clear(),

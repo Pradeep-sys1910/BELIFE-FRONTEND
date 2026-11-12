@@ -66,7 +66,7 @@ export default function RightSidebar() {
   useEffect(() => {
     if (shouldHide || !user) return;
     setLoadingSuggested(true);
-    api.get('/users/suggested')
+    api.privateGet('/users/suggested')
       .then(r => setSuggested((r.data as any[])?.slice(0, 4) || []))
       .catch(() => {})
       .finally(() => setLoadingSuggested(false));

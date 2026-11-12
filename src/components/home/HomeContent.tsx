@@ -13,7 +13,8 @@ import { useAuthStore } from '@/store/authStore';
 
 interface Blog {
   id: string; title: string; slug: string; excerpt: string; image: string;
-  readTime: number; createdAt: string;
+  readTime: number; createdAt: string; intent?: string;
+  isLiked?: boolean; isBookmarked?: boolean;
   author:   { name: string; username?: string; avatar?: string };
   category: { name: string; slug: string } | null;
   _count:   { likes: number; comments: number };
@@ -77,8 +78,8 @@ function GuestLanding() {
 function PostCard({ blog }: { blog: Blog }) {
   const { user } = useAuthStore();
   const router   = useRouter();
-  const [liked,  setLiked]  = useState(false);
-  const [saved,  setSaved]  = useState(false);
+  const [liked,  setLiked]  = useState(Boolean(blog.isLiked));
+  const [saved,  setSaved]  = useState(Boolean(blog.isBookmarked));
   const [likes,  setLikes]  = useState(blog._count.likes);
   const [liking, setLiking] = useState(false);
 
@@ -269,18 +270,55 @@ export default function HomeContent() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   // Fresh seed per mount → feed order varies each visit instead of identical newest-first.
   const seedRef = useRef(Math.random().toString(36).slice(2));
+  const feedSnapshotRef = useRef<string | null>(null);
+  const forYouModeRef = useRef(false);
 
-  // Initial load
+  // Load the authenticated recommendation feed or the public discovery feed.
   useEffect(() => {
-    Promise.all([
-      api.get('/blogs', { params: { limit: PAGE_SIZE, page: 1, seed: seedRef.current } }).catch(() => ({ data: { blogs: [] } })),
-      api.get('/categories').catch(() => ({ data: [] })),
-    ]).then(([bRes, cRes]) => {
-      const newBlogs = (bRes.data as any).blogs || [];
-      setBlogs(newBlogs);
-      setHasMore(newBlogs.length === PAGE_SIZE);
-      setCategories(((cRes.data as any[]) || []).slice(0, 12));
-    }).finally(() => setLoading(false));
+    let active = true;
+    setLoading(true);
+    setBlogs([]);
+    setPage(1);
+    setHasMore(true);
+    setFollowBlogs([]);
+    setFollowPage(1);
+    setFollowHasMore(true);
+    setFollowLoaded(false);
+    feedSnapshotRef.current = null;
+    forYouModeRef.current = Boolean(user);
+
+    const params = { limit: PAGE_SIZE, page: 1 };
+    const request = user
+      ? api.privateGet('/blogs/for-you', { params }).catch(() => {
+          if (active) forYouModeRef.current = false;
+          return api.get('/blogs', { params: { ...params, seed: seedRef.current } });
+        })
+      : api.get('/blogs', { params: { ...params, seed: seedRef.current } });
+
+    request
+      .then(r => {
+        if (!active) return;
+        const response = r.data as any;
+        const newBlogs = response.blogs || [];
+        feedSnapshotRef.current = response.snapshot || null;
+        setBlogs(newBlogs);
+        setHasMore(newBlogs.length === PAGE_SIZE);
+      })
+      .catch(() => {
+        if (active) {
+          setBlogs([]);
+          setHasMore(false);
+        }
+      })
+      .finally(() => { if (active) setLoading(false); });
+
+    return () => { active = false; };
+  }, [user?.id]);
+
+  useEffect(() => {
+    api.get('/categories')
+      .then(r => setCategories(((r.data as any[]) || []).slice(0, 12)))
+      .catch(() => {});
   }, []);
 
   // Load more (for-you tab)
@@ -289,13 +327,22 @@ export default function HomeContent() {
     setLoadingMore(true);
     const next = page + 1;
     try {
-      const { data } = await api.get('/blogs', { params: { limit: PAGE_SIZE, page: next, seed: seedRef.current } });
+      const useRecommendations = Boolean(user) && forYouModeRef.current;
+      const params = useRecommendations
+        ? { limit: PAGE_SIZE, page: next, ...(feedSnapshotRef.current ? { snapshot: feedSnapshotRef.current } : {}) }
+        : { limit: PAGE_SIZE, page: next, seed: seedRef.current };
+      const { data } = useRecommendations
+        ? await api.privateGet('/blogs/for-you', { params })
+        : await api.get('/blogs', { params });
       const newBlogs = (data as any).blogs || [];
-      setBlogs(prev => [...prev, ...newBlogs]);
+      setBlogs(prev => {
+        const existingIds = new Set(prev.map(blog => blog.id));
+        return [...prev, ...newBlogs.filter((blog: Blog) => !existingIds.has(blog.id))];
+      });
       setPage(next);
       setHasMore(newBlogs.length === PAGE_SIZE);
-    } catch {} finally { setLoadingMore(false); }
-  }, [loadingMore, hasMore, tab, page]);
+    } catch { setHasMore(false); } finally { setLoadingMore(false); }
+  }, [loadingMore, hasMore, tab, page, user?.id]);
 
   // Load more (following tab)
   const loadMoreFollowing = useCallback(async () => {
@@ -303,13 +350,13 @@ export default function HomeContent() {
     setFollowLoadMore(true);
     const next = followPage + 1;
     try {
-      const { data } = await api.get('/blogs/following', { params: { limit: PAGE_SIZE, page: next } });
+      const { data } = await api.privateGet('/blogs/following', { params: { limit: PAGE_SIZE, page: next } });
       const newBlogs = (data as any).blogs || [];
       setFollowBlogs(prev => [...prev, ...newBlogs]);
       setFollowPage(next);
       setFollowHasMore(newBlogs.length === PAGE_SIZE);
-    } catch {} finally { setFollowLoadMore(false); }
-  }, [followLoadMore, followHasMore, tab, followPage]);
+    } catch { setFollowHasMore(false); } finally { setFollowLoadMore(false); }
+  }, [followLoadMore, followHasMore, tab, followPage, user?.id]);
 
   // IntersectionObserver sentinel
   useEffect(() => {
@@ -332,7 +379,7 @@ export default function HomeContent() {
     setTab('following');
     if (followLoaded || !user) return;
     setFollowLoading(true);
-    api.get('/blogs/following', { params: { limit: PAGE_SIZE, page: 1 } })
+    api.privateGet('/blogs/following', { params: { limit: PAGE_SIZE, page: 1 } })
       .then(r => {
         const newBlogs = (r.data as any).blogs || [];
         setFollowBlogs(newBlogs);

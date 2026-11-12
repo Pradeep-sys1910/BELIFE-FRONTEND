@@ -17,6 +17,14 @@ import toast from 'react-hot-toast';
 interface Category { id: string; name: string; slug: string; }
 interface Attachment { url: string; name: string; type: string; size: number }
 
+const STORY_INTENTS = [
+  { value: 'PRACTICAL', label: 'Practical advice' },
+  { value: 'NEWS', label: 'News & explainers' },
+  { value: 'INSPIRATION', label: 'Inspiration' },
+  { value: 'COMMUNITY', label: 'Community story' },
+  { value: 'GENERAL', label: 'General story' },
+];
+
 function insertMarkdown(textarea: HTMLTextAreaElement, before: string, after = '', placeholder = 'text') {
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
@@ -71,7 +79,7 @@ export default function NewBlogPage() {
   const [storage, setStorage] = useState<{ usedMB: number; limitGB: number; percentUsed: number } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [form, setForm] = useState({
-    title: '', excerpt: '', content: '', image: '', categoryId: '', tags: '', readTime: 5,
+    title: '', excerpt: '', content: '', image: '', categoryId: '', tags: '', readTime: 5, intent: 'GENERAL',
   });
 
   useEffect(() => {
@@ -240,7 +248,7 @@ export default function NewBlogPage() {
           )}
         </Section>
 
-        {/* Meta: category, read time, tags */}
+        {/* Meta: category, story intent, read time, tags */}
         <Section icon={FolderOpen} title="Details">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
@@ -253,6 +261,17 @@ export default function NewBlogPage() {
                 style={{ background: 'var(--bg-elevated)', color: 'var(--text)', border: '1px solid var(--border)' }}>
                 <option value="">Select category</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium uppercase tracking-wide mb-1.5 block" style={{ color: 'var(--text-muted)' }}>
+                Story type
+              </label>
+              <select value={form.intent}
+                onChange={e => setForm({ ...form, intent: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--eco)]"
+                style={{ background: 'var(--bg-elevated)', color: 'var(--text)', border: '1px solid var(--border)' }}>
+                {STORY_INTENTS.map(intent => <option key={intent.value} value={intent.value}>{intent.label}</option>)}
               </select>
             </div>
             <div>

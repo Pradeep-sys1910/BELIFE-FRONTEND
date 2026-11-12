@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Check, ArrowRight, Leaf } from 'lucide-react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import toast from 'react-hot-toast';
 
 const TOPICS = [
   { key: 'CLIMATE',           label: 'Climate',           emoji: '🌍' },
@@ -14,6 +15,15 @@ const TOPICS = [
   { key: 'SUSTAINABLE_LIVING',label: 'Sustainable Living',emoji: '🌿' },
   { key: 'GENERAL',           label: 'Eco Stories',       emoji: '📖' },
 ];
+
+const FEED_GOALS = [
+  { key: 'PRACTICAL', label: 'Practical advice' },
+  { key: 'NEWS', label: 'News & explainers' },
+  { key: 'INSPIRATION', label: 'Inspiration' },
+  { key: 'COMMUNITY', label: 'Community stories' },
+];
+
+interface Category { id: string; name: string; slug: string; icon?: string }
 
 interface SuggestedUser {
   id: string; name: string; username?: string; avatar?: string; bio?: string;
@@ -36,6 +46,8 @@ export default function OnboardingPage() {
   const { user, updateUser } = useAuthStore();
   const [step,          setStep]          = useState(1);
   const [topics,        setTopics]        = useState<string[]>([]);
+  const [goals,         setGoals]         = useState<string[]>([]);
+  const [categories,    setCategories]    = useState<Category[]>([]);
   const [suggested,     setSuggested]     = useState<SuggestedUser[]>([]);
   const [following,     setFollowing]     = useState<Set<string>>(new Set());
   const [loadingSuggest,setLoadingSuggest]= useState(false);
@@ -46,10 +58,23 @@ export default function OnboardingPage() {
     if (user.onboarded) { router.replace('/'); return; }
   }, [user]);
 
+  useEffect(() => {
+    api.get('/categories')
+      .then(r => setCategories((r.data as Category[]) || []))
+      .catch(() => {});
+  }, []);
+
+  const topicOptions = categories.length
+    ? categories.map(category => ({ key: category.slug, label: category.name, emoji: category.icon || '🌿' }))
+    : TOPICS.filter(topic => topic.key !== 'GENERAL').map(topic => ({
+        ...topic,
+        key: topic.key.toLowerCase().replace(/_/g, '-'),
+      }));
+
   const goToStep2 = () => {
     setStep(2);
     setLoadingSuggest(true);
-    api.get('/users/suggested')
+    api.privateGet('/users/suggested')
       .then(r => setSuggested(r.data as SuggestedUser[]))
       .catch(() => {})
       .finally(() => setLoadingSuggest(false));
@@ -58,15 +83,29 @@ export default function OnboardingPage() {
   const toggleFollow = (id: string) =>
     setFollowing(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
+  const toggleTopic = (slug: string) => setTopics(current => {
+    if (current.includes(slug)) return current.filter(topic => topic !== slug);
+    return current.length < 3 ? [...current, slug] : current;
+  });
+
+  const toggleGoal = (goal: string) => setGoals(current => {
+    if (current.includes(goal)) return current.filter(item => item !== goal);
+    return current.length < 2 ? [...current, goal] : current;
+  });
+
   const finish = async () => {
     setFinishing(true);
     try {
-      const { data } = await api.post('/users/onboard', { followIds: [...following] });
+      await api.post('/users/onboard', {
+        followIds: Array.from(following),
+        feedTopics: topics,
+        feedGoals: goals,
+      });
       updateUser({ onboarded: true });
       router.replace('/');
-    } catch {
-      updateUser({ onboarded: true });
-      router.replace('/');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Could not save your feed preferences. Please try again.');
+      setFinishing(false);
     }
   };
 
@@ -108,10 +147,10 @@ export default function OnboardingPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-            {TOPICS.map(t => {
+            {topicOptions.map(t => {
               const selected = topics.includes(t.key);
               return (
-                <button key={t.key} onClick={() => setTopics(s => s.includes(t.key) ? s.filter(x => x !== t.key) : [...s, t.key])}
+                <button key={t.key} onClick={() => toggleTopic(t.key)} aria-pressed={selected}
                   className="flex items-center gap-3 p-4 rounded-2xl text-left transition-all duration-200 active:scale-95"
                   style={{
                     background: selected ? 'var(--eco-dim)' : 'var(--bg-card)',
@@ -127,6 +166,26 @@ export default function OnboardingPage() {
                 </button>
               );
             })}
+          </div>
+
+          <div className="mb-6">
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-muted)' }}>
+              What would you like to see? <span className="font-normal normal-case">(choose up to 2)</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {FEED_GOALS.map(goal => {
+                const selected = goals.includes(goal.key);
+                return (
+                  <button key={goal.key} type="button" onClick={() => toggleGoal(goal.key)} aria-pressed={selected}
+                    className="px-3 py-2 rounded-full text-xs font-medium transition-colors"
+                    style={selected
+                      ? { background: 'var(--eco-dim)', color: 'var(--eco-bright)', border: '1px solid var(--border-eco)' }
+                      : { background: 'var(--bg-card)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                    {goal.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <button onClick={goToStep2}
